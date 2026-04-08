@@ -103,8 +103,8 @@ This promotes feature isolation and easier maintenance.
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/vertical-slice-template.git
-cd vertical-slice-template
+git clone https://github.com/yourusername/archetype-template.git
+cd archetype-template
 
 # Restore dependencies
 dotnet restore
