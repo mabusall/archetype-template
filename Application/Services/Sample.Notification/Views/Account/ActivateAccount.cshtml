@@ -1,0 +1,45 @@
+﻿@page
+
+@using System.Globalization
+@using Sample.Notification.Views.Account
+@using Archetype.Resources
+
+@model ActivateAccountModel
+@{
+    var viewModel = ViewContext.ViewData.Model as ActivateAccountModel;
+    var isArabic = viewModel!.LanguageIsoCode!.Equals("ar", StringComparison.OrdinalIgnoreCase);
+
+    // set the thread language
+    Thread.CurrentThread.CurrentUICulture = new CultureInfo(viewModel!.LanguageIsoCode!);
+
+    // format the body
+    var message = string.Format(EmailNotificationResources.ActivateAccountTemplate_Body,
+        viewModel.Name, viewModel.Account, viewModel.Email, viewModel.ActivationCode);
+
+    Layout = "_EmailLayout";
+    ViewBag.IsArabic = isArabic;
+    ViewBag.Team = EmailNotificationResources.Team;
+    ViewBag.DoNotReplyToThisMail = EmailNotificationResources.DoNotReplyToThisMail;
+    ViewBag.Copyright = EmailNotificationResources.Copyright;
+    ViewBag.NeedHelp = EmailNotificationResources.NeedHelp;
+    ViewBag.NeedForHelpMessage = EmailNotificationResources.NeedForHelpMessage;
+    ViewBag.EmailTitle = EmailNotificationResources.ActivateAccountTemplate_Title;
+    ViewBag.SiteUrl = viewModel.SiteUrl;
+}
+
+<table>
+    <tbody>
+        <tr>
+            <td dir='@(isArabic ? "rtl" : "ltr")' style="font-size: 20px; line-height: 40px; color: #282828;">
+                <p>@EmailNotificationResources.WelcomeMessage,</p>
+            </td>
+        </tr>
+        <tr>
+            <td dir='@(isArabic ? "rtl" : "ltr")' style="font-size: 16px;">
+                <p>
+                    @Html.Raw(message)
+                </p>
+            </td>
+        </tr>
+    </tbody>
+</table>

@@ -1,0 +1,29 @@
+<Solution>
+  <Folder Name="/Application/" />
+  <Folder Name="/Application/Modules/">
+    <Project Path="Application/Modules/Sample.Core.Api/Sample.Core.Api.csproj" />
+  </Folder>
+  <Folder Name="/Application/Services/">
+    <Project Path="Application/Services/Sample.Api/Sample.Api.csproj" />
+    <Project Path="Application/Services/Sample.Notification/Sample.Notification.csproj" />
+  </Folder>
+  <Folder Name="/Shared/">
+    <Project Path="Shared/Archetype.Infrastructure/Archetype.Infrastructure.csproj" />
+    <Project Path="Shared/Archetype.Keycloak.Api/Archetype.Keycloak.Api.csproj" />
+    <Project Path="Shared/Archetype.Resources/Archetype.Resources.csproj" />
+    <Project Path="Shared/Archetype.Shared/Archetype.Shared.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="Solution Items/audit-report.md" />
+    <File Path="Solution Items/db-migration-commands.md" />
+    <File Path="Solution Items/docker-containers-images.md" />
+    <File Path="Solution Items/openapi-spec-export-guide.md" />
+    <File Path="Solution Items/opentelemetry-implementation-summary.md" />
+    <File Path="Solution Items/README.md" />
+    <File Path="Solution Items/response-compression.md" />
+  </Folder>
+  <Folder Name="/Solution Items/Scripts/">
+    <File Path="Solution Items/Scripts/export-openapi-spec.ps1" />
+    <File Path="Solution Items/Scripts/export-openapi-spec.sh" />
+  </Folder>
+</Solution>
