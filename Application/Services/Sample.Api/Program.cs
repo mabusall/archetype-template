@@ -51,7 +51,7 @@ if (app.Environment.IsDevelopment())
 
 app
     .UseInfrastructureServices(true)
-    .UseTasheerCoreModule();
+    .UseSampleCoreModule();
 
 // cleanup memory stack
 MemeoryStack.Flush();

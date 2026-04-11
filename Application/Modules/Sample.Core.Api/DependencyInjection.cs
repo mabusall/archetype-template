@@ -48,7 +48,7 @@ static class DependencyInjection
         return builder;
     }
 
-    public static WebApplication UseTasheerCoreModule(this WebApplication app)
+    public static WebApplication UseSampleCoreModule(this WebApplication app)
     {
         app
             .UseMigration<SampleDbContext>()

@@ -1,8 +1,6 @@
-﻿[assembly: InternalsVisibleTo("Sample.Core.Api")]
+﻿namespace Archetype.Keycloak.Api;
 
-namespace Archetype.Keycloak.Api;
-
-static class DependencyInjection
+public static class DependencyInjection
 {
     public static TBuilder AddKeycloakModule<TBuilder>(this TBuilder builder)
         where TBuilder : IHostApplicationBuilder
