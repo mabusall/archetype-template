@@ -177,7 +177,7 @@ nswag openapi2csclient \
   /input:openapi-spec.json \
   /output:ApiClient.cs \
   /namespace:MyApp.ApiClient \
-  /className:TasheerApiClient
+  /className:ArchetypeApiClient
 ```
 
 **Using Kiota (Microsoft):**
@@ -189,7 +189,7 @@ dotnet tool install -g Microsoft.OpenApi.Kiota
 kiota generate \
   -l csharp \
   -d openapi-spec.json \
-  -c TasheerApiClient \
+  -c ArchetypeApiClient \
   -n MyApp.ApiClient \
   -o ./Generated
 ```
@@ -208,7 +208,7 @@ openapi-generator-cli generate \
   -i openapi-spec.json \
   -g python \
   -o ./api_client \
-  --package-name tasheer_api_client
+  --package-name archetype_api_client
 ```
 
 ---
@@ -423,7 +423,7 @@ npx swagger-ui-watcher openapi-spec.json
 **Fix:**
 ```bash
 # Ensure API is running
-dotnet run --project Application/Services/Tasheer.Api
+dotnet run --project Application/Services/Archetype.Api
 
 # Check environment
 echo $ASPNETCORE_ENVIRONMENT  # Should be "Development"

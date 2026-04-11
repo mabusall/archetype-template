@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Team" xml:space="preserve">
-    <value>L'équipe Tasheer,</value>
+    <value>L'équipe Archetype,</value>
   </data>
   <data name="DoNotReplyToThisMail" xml:space="preserve">
     <value>Cette notification électronique a été générée automatiquement. Merci de ne pas répondre à ce mail.</value>
@@ -167,6 +167,6 @@
     <value>Si vous avez besoin d'aide ou si vous avez des questions, notre équipe d'assistance est là pour vous aider. Vous pouvez nous joindre au</value>
   </data>
   <data name="WelcomeMessage" xml:space="preserve">
-    <value>Bienvenue à Tasheer</value>
+    <value>Bienvenue à Archetype</value>
   </data>
 </root>

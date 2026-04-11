@@ -167,7 +167,7 @@ GET /weatherforecast [500ms]
 
 Tags:
   - SystemCorrelationId: abc-123
-  - user.id: admin@tasheer.com
+  - user.id: admin@archetype.com
   - exception.type: SqlException (if error)
 ```
 
@@ -184,7 +184,7 @@ Your logs now include:
     "TraceId": "4bf92f3577...",       // ? OpenTelemetry
     "SpanId": "00f067aa0ba902b7",     // ? OpenTelemetry
     "Environment": "Development",
-    "Application": "Tasheer.Api"
+    "Application": "Archetype.Api"
   },
   "exception": { ... }
 }
@@ -297,7 +297,7 @@ OpenTelemetry automatically collects:
 
 ### **Step 1: Run Your Application**
 ```powershell
-dotnet run --project Application/Services/Tasheer.Api
+dotnet run --project Application/Services/Archetype.Api
 ```
 
 ### **Step 2: Generate Traffic**
@@ -469,7 +469,7 @@ Your `SystemCorrelationId` **propagates through all of these!**
 ### **How to View Metrics:**
 
 1. Kibana ? APM ? Services
-2. Click on **"Tasheer.Api"**
+2. Click on **"Archetype.Api"**
 3. See:
    - Latency (P50, P95, P99)
    - Throughput (requests/min)

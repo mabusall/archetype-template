@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Tasheer.Infrastructure.MessageBus.Migrations
+namespace Archetype.Infrastructure.MessageBus.Migrations
 {
     [DbContext(typeof(OutBoxDbContext))]
     [Migration("20260209073812_OutBox_Init")]

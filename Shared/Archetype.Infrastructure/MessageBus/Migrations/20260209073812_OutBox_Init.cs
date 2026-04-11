@@ -1,6 +1,6 @@
 ﻿#nullable disable
 
-namespace Tasheer.Infrastructure.MessageBus.Migrations
+namespace Archetype.Infrastructure.MessageBus.Migrations
 {
     /// <inheritdoc />
     public partial class OutBox_Init : Migration

@@ -5,7 +5,7 @@ using Sample.Core.Api.Repository;
 
 #nullable disable
 
-namespace Tasheer.Core.Api.Repository.Migrations
+namespace Sample.Core.Api.Repository.Migrations
 {
     [DbContext(typeof(SampleDbContext))]
     [Migration("20260217111628_SampleDb_Init")]
@@ -22,7 +22,7 @@ namespace Tasheer.Core.Api.Repository.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Tasheer.Core.Api.Entities.Order", b =>
+            modelBuilder.Entity("Sample.Core.Api.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -95,7 +95,7 @@ namespace Tasheer.Core.Api.Repository.Migrations
                     b.ToTable("Order", "dbo");
                 });
 
-            modelBuilder.Entity("Tasheer.Core.Api.Entities.OrderItem", b =>
+            modelBuilder.Entity("Sample.Core.Api.Entities.OrderItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -160,16 +160,16 @@ namespace Tasheer.Core.Api.Repository.Migrations
                     b.ToTable("OrderItem", "dbo");
                 });
 
-            modelBuilder.Entity("Tasheer.Core.Api.Entities.OrderItem", b =>
+            modelBuilder.Entity("Sample.Core.Api.Entities.OrderItem", b =>
                 {
-                    b.HasOne("Tasheer.Core.Api.Entities.Order", null)
+                    b.HasOne("Sample.Core.Api.Entities.Order", null)
                         .WithMany("Items")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Tasheer.Core.Api.Entities.Order", b =>
+            modelBuilder.Entity("Sample.Core.Api.Entities.Order", b =>
                 {
                     b.Navigation("Items");
                 });

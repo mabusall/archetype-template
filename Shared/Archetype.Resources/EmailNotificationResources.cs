@@ -19,7 +19,7 @@ public class EmailNotificationResources
         {
             if (ReferenceEquals(resourceMan, null))
             {
-                System.Resources.ResourceManager temp = new("Tasheer.Resources.EmailNotificationResources", typeof(EmailNotificationResources).Assembly);
+                System.Resources.ResourceManager temp = new("Archetype.Resources.EmailNotificationResources", typeof(EmailNotificationResources).Assembly);
                 resourceMan = temp;
             }
             return resourceMan;

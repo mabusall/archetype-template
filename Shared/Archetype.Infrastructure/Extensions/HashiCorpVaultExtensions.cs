@@ -84,7 +84,7 @@ public static class HashiCorpVaultExtensions
         {
             IKeyValueSecretsEngineV2 kv = client.V1.Secrets.KeyValue.V2;
 
-            // secretPath example: "tasheer/dev/appsettings"
+            // secretPath example: "archetype/dev/appsettings"
             Secret<SecretData> secret = await kv.ReadSecretAsync(secretPath, mountPoint: mountPoint);
             IDictionary<string, object>? data = secret.Data.Data; // IDictionary<string, object>
 

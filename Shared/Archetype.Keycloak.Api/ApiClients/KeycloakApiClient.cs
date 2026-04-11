@@ -216,7 +216,7 @@ public class KeycloakRealmClient(HttpClient httpClient,
 
         KeycloakOptions options = appSettingsKeyManagement.KeycloakOptions;
         Realm clientRealm = options!.GetCustomRealm();
-        RealmClient customClient = options.GetCustomClient("TasheerCli");
+        RealmClient customClient = options.GetCustomClient("ArchetypeCli");
         string url = string.Format(options.EndPoints.TokenExchange, clientRealm.Name);
         using FormUrlEncodedContent content = new(new Dictionary<string, string>
         {
@@ -302,7 +302,7 @@ public class KeycloakRealmClient(HttpClient httpClient,
     {
         KeycloakOptions options = appSettingsKeyManagement.KeycloakOptions;
         Realm clientRealm = options!.GetCustomRealm();
-        RealmClient customClient = options.GetCustomClient("TasheerCli");
+        RealmClient customClient = options.GetCustomClient("ArchetypeCli");
         string url = string.Format(options!.EndPoints.Introspect, clientRealm.Name);
         using FormUrlEncodedContent content = new(new Dictionary<string, string>
         {
@@ -385,7 +385,7 @@ public class KeycloakRealmClient(HttpClient httpClient,
     {
         KeycloakOptions options = appSettingsKeyManagement.KeycloakOptions;
         Realm clientRealm = options!.GetCustomRealm();
-        RealmClient customClient = options.GetCustomClient("TasheerCli");
+        RealmClient customClient = options.GetCustomClient("ArchetypeCli");
         string url = string.Format($"{options.EndPoints.TokenExchange}", clientRealm.Name);
         using FormUrlEncodedContent content = new(new Dictionary<string, string>
         {
@@ -418,7 +418,7 @@ public class KeycloakRealmClient(HttpClient httpClient,
     {
         KeycloakOptions options = appSettingsKeyManagement.KeycloakOptions;
         Realm clientRealm = options!.GetCustomRealm();
-        RealmClient customClient = options.GetCustomClient("TasheerCli");
+        RealmClient customClient = options.GetCustomClient("ArchetypeCli");
         string url = string.Format(options.EndPoints.LogoutUser, clientRealm.Name);
         using FormUrlEncodedContent content = new(new Dictionary<string, string>
         {
@@ -444,7 +444,7 @@ public class KeycloakRealmClient(HttpClient httpClient,
     {
         KeycloakOptions options = appSettingsKeyManagement.KeycloakOptions;
         Realm clientRealm = options!.GetCustomRealm();
-        RealmClient customClient = options.GetCustomClient("TasheerCli");
+        RealmClient customClient = options.GetCustomClient("ArchetypeCli");
         string url = string.Format(options.EndPoints.TokenExchange, clientRealm.Name);
         using FormUrlEncodedContent content = new(new Dictionary<string, string>
         {

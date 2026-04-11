@@ -1,4 +1,4 @@
-# ?? Tasheer Vertical Slice Template
+# ?? Archetype Vertical Slice Template
 
 A **production-ready .NET 10 template** implementing **Vertical Slice Architecture** with **CQRS**, comprehensive observability, and enterprise-grade infrastructure services.
 
@@ -27,7 +27,7 @@ A **production-ready .NET 10 template** implementing **Vertical Slice Architectu
 
 ## ?? **Overview**
 
-Tasheer is a **company-wide template** for building modern, scalable .NET APIs using **Vertical Slice Architecture**. It provides a complete foundation with:
+Archetype is a **company-wide template** for building modern, scalable .NET APIs using **Vertical Slice Architecture**. It provides a complete foundation with:
 
 - **CQRS pattern** using MediatR
 - **Repository & Unit of Work** patterns
@@ -180,7 +180,7 @@ The template uses **User Secrets** for sensitive configuration (development only
 
 ```bash
 # Navigate to the API project
-cd "Application\Services\Tasheer.Api"
+cd "Application\Services\Archetype.Api"
 
 # Initialize user secrets
 dotnet user-secrets init
@@ -215,17 +215,17 @@ dotnet user-secrets init
 
 ```bash
 # Create database and apply migrations
-dotnet ef database update --project "Application\Modules\Tasheer.Core.Api" --startup-project "Application\Services\Tasheer.Api"
+dotnet ef database update --project "Application\Modules\Archetype.Core.Api" --startup-project "Application\Services\Archetype.Api"
 
 # Apply Outbox migrations (for MassTransit)
-dotnet ef database update --context OutBoxDbContext --project "Shared\Tasheer.Infrastructure" --startup-project "Application\Services\Tasheer.Api"
+dotnet ef database update --context OutBoxDbContext --project "Shared\Archetype.Infrastructure" --startup-project "Application\Services\Archetype.Api"
 ```
 
 ### **4. Run the Application**
 
 ```bash
 # Navigate to API project
-cd "Application\Services\Tasheer.Api"
+cd "Application\Services\Archetype.Api"
 
 # Run the application
 dotnet run
@@ -258,17 +258,17 @@ Vertical Slice Template/
 ?
 ??? Application/
 ?   ??? Services/
-?   ?   ??? Tasheer.Api              # ?? Main API Entry Point
-?   ?   ??? Tasheer.Notification     # ?? Notification Service
+?   ?   ??? Archetype.Api              # ?? Main API Entry Point
+?   ?   ??? Archetype.Notification     # ?? Notification Service
 ?   ?
 ?   ??? Modules/
-?       ??? Tasheer.Core.Api         # ?? Business Module (Orders example)
+?       ??? Archetype.Core.Api         # ?? Business Module (Orders example)
 ?       ??? Keycloak.Api             # ?? Authentication Module
 ?
 ??? Shared/
-?   ??? Tasheer.Infrastructure       # ? Core Infrastructure Services
-?   ??? Tasheer.Shared               # ?? Common Utilities & Models
-?   ??? Tasheer.Resources            # ?? Localization Resources
+?   ??? Archetype.Infrastructure       # ? Core Infrastructure Services
+?   ??? Archetype.Shared               # ?? Common Utilities & Models
+?   ??? Archetype.Resources            # ?? Localization Resources
 ?
 ??? docs/                            # ?? Documentation
 ??? AUDIT-REPORT.md                  # ?? Solution Audit Report
@@ -279,12 +279,12 @@ Vertical Slice Template/
 
 | Project | Purpose | Type |
 |---------|---------|------|
-| **Tasheer.Infrastructure** | Core infrastructure (CQRS, Repository, Auth, etc.) | Shared |
-| **Tasheer.Shared** | Common utilities and configuration models | Shared |
-| **Tasheer.Api** | Main API host and entry point | Service |
-| **Tasheer.Core.Api** | Business logic module (Orders feature) | Module |
+| **Archetype.Infrastructure** | Core infrastructure (CQRS, Repository, Auth, etc.) | Shared |
+| **Archetype.Shared** | Common utilities and configuration models | Shared |
+| **Archetype.Api** | Main API host and entry point | Service |
+| **Archetype.Core.Api** | Business logic module (Orders feature) | Module |
 | **Keycloak.Api** | Authentication & user management | Module |
-| **Tasheer.Notification** | Email & push notifications | Service |
+| **Archetype.Notification** | Email & push notifications | Service |
 
 ---
 
@@ -333,9 +333,9 @@ Vertical Slice Template/
     "IsEnabled": true,
     "Environment": "Development",
     "Logging": {
-      "Project": "Tasheer",
-      "Application": "Tasheer.Api",
-      "FolderPath": "C:\\Logs\\Tasheer",
+      "Project": "Archetype",
+      "Application": "Archetype.Api",
+      "FolderPath": "C:\\Logs\\Archetype",
       "EnableConsoleLogs": true,
       "EnableFileLogs": true
     },
@@ -345,7 +345,7 @@ Vertical Slice Template/
     },
     "Apm": {
       "AddressUri": "http://localhost:8201",
-      "ServiceName": "Tasheer.Api",
+      "ServiceName": "Archetype.Api",
       "ServiceVersion": "1.0.0"
     },
     "OpenTelemetry": {
@@ -366,10 +366,10 @@ Vertical Slice Template/
     "IsEnabled": true,
     "UserName": "guest",
     "Password": "guest",
-    "Prefix": "tasheer-",
+    "Prefix": "Archetype-",
     "Consumers": {
       "EmailEndpoint": {
-        "Consumer": "Tasheer.Notification.EventHandlers.Handlers.SendEmailConsumer, Tasheer.Notification",
+        "Consumer": "Archetype.Notification.EventHandlers.Handlers.SendEmailConsumer, Archetype.Notification",
         "IsActive": true,
         "UseDatabase": true
       }
@@ -384,12 +384,12 @@ Vertical Slice Template/
   "Hangfire": {
     "IsEnabled": true,
     "SchemaName": "Hangfire",
-    "Prefix": "tasheer-",
+    "Prefix": "Archetype-",
     "Tasks": {
       "CacheOrdersJob": {
         "IsEnabled": true,
         "AutoStart": true,
-        "Handler": "Tasheer.Core.Api.Jobs.CacheOrdersJob, Tasheer.Core.Api",
+        "Handler": "Archetype.Core.Api.Jobs.CacheOrdersJob, Archetype.Core.Api",
         "Schedule": "0.00:05:00"
       }
     }
@@ -405,8 +405,8 @@ Vertical Slice Template/
     "IsEnabled": true,
     "SecureSsl": false,
     "Password": "",
-    "OutputCachePrefix": "TasheerOutputCache_",
-    "DistributedCachePrefix": "TasheerDistributedCache_"
+    "OutputCachePrefix": "ArchetypeOutputCache_",
+    "DistributedCachePrefix": "ArchetypeDistributedCache_"
   }
 }
 ```
@@ -418,10 +418,10 @@ Vertical Slice Template/
     "AddressUri": "http://localhost:8080",
     "Realms": {
       "Custom": {
-        "Name": "tasheer",
+        "Name": "Archetype",
         "Clients": {
-          "TasheerCli": {
-            "ClientId": "tasheer-cli",
+          "ArchetypeCli": {
+            "ClientId": "Archetype-cli",
             "Secret": "your-client-secret"
           }
         }
@@ -639,7 +639,7 @@ internal class SendReportJob(ISampleDbUnitOfWork uow, ILogger<SendReportJob> log
       "SendReportJob": {
         "IsEnabled": true,
         "AutoStart": false,
-        "Handler": "Tasheer.Core.Api.Jobs.SendReportJob, Tasheer.Core.Api",
+        "Handler": "Archetype.Core.Api.Jobs.SendReportJob, Archetype.Core.Api",
         "Schedule": "0.01:00:00"
       }
     }
@@ -714,7 +714,7 @@ Result: All logs for that request (HTTP ? MediatR ? MassTransit ? Hangfire)
 
 #### **Elastic APM (Performance)**
 ```
-APM ? Services ? Tasheer.Api ? Transactions ? GET /order
+APM ? Services ? Archetype.Api ? Transactions ? GET /order
 View:
   - Duration breakdown
   - Database queries
@@ -771,9 +771,9 @@ docker-compose up -d
 > ?? **Note:** Test projects coming soon! See [AUDIT-REPORT.md](AUDIT-REPORT.md).
 
 ### **Planned Test Projects:**
-- `Tasheer.Infrastructure.Tests` - Unit tests for infrastructure
-- `Tasheer.Core.Api.Tests` - Unit tests for business logic
-- `Tasheer.Api.IntegrationTests` - End-to-end API tests
+- `Archetype.Infrastructure.Tests` - Unit tests for infrastructure
+- `Archetype.Core.Api.Tests` - Unit tests for business logic
+- `Archetype.Api.IntegrationTests` - End-to-end API tests
 
 ---
 
@@ -781,7 +781,7 @@ docker-compose up -d
 
 ### **Available Documentation**
 - ? [AUDIT-REPORT.md](AUDIT-REPORT.md) - Solution audit and improvement roadmap
-- ? [appsettings.Cors.example.json](Application/Services/Tasheer.Api/appsettings.Cors.example.json) - CORS configuration examples
+- ? [appsettings.Cors.example.json](Application/Services/Archetype.Api/appsettings.Cors.example.json) - CORS configuration examples
 
 ### **Coming Soon**
 - ?? ARCHITECTURE.md - Detailed architecture guide
@@ -892,10 +892,10 @@ Enable/disable features without code changes:
 ### **Update Database Schema**
 ```bash
 # Add migration
-dotnet ef migrations add YourMigrationName --project "Application\Modules\Tasheer.Core.Api"
+dotnet ef migrations add YourMigrationName --project "Application\Modules\Archetype.Core.Api"
 
 # Apply migration
-dotnet ef database update --project "Application\Modules\Tasheer.Core.Api" --startup-project "Application\Services\Tasheer.Api"
+dotnet ef database update --project "Application\Modules\Archetype.Core.Api" --startup-project "Application\Services\Archetype.Api"
 ```
 
 ### **View Hangfire Dashboard**
@@ -911,7 +911,7 @@ http://localhost:5000/hangfire
 ```bash
 # In Hangfire dashboard, click "Trigger Now" button
 # Or via code:
-RecurringJob.TriggerJob("tasheer-cacheordersjob");
+RecurringJob.TriggerJob("Archetype-cacheordersjob");
 ```
 
 ### **Check Health Status**
@@ -1059,7 +1059,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 ### **Internal Support**
 - ?? **Email:** platform-team@yourcompany.com
 - ?? **Teams:** #platform-support channel
-- ?? **Wiki:** [Internal Documentation](https://wiki.yourcompany.com/tasheer)
+- ?? **Wiki:** [Internal Documentation](https://wiki.yourcompany.com/Archetype)
 
 ### **Issues**
 For bugs or feature requests, create an issue in [Azure DevOps](https://dev.azure.com/mabusall/Vertical%20Slice%20Template/_workitems).

@@ -11,7 +11,7 @@ public class SendEmailConsumer(AppSettingsKeyManagement appSettingsKeyManagement
         string fromAddress = smtpEmailOptions!.SenderEmail;
         MailMessage mailMessage = new()
         {
-            From = new MailAddress(fromAddress, "Tasheer - فريق العمل"),
+            From = new MailAddress(fromAddress, "Sample - فريق العمل"),
             Subject = @event.Subject,
             IsBodyHtml = true,
             Body = await RenderEmailBody(@event),

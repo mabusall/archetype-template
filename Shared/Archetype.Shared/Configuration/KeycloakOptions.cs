@@ -20,7 +20,7 @@ public class KeycloakOptions
         return client;
     }
 
-    public RealmClient GetCustomClient(string clientName = "TasheerCli")
+    public RealmClient GetCustomClient(string clientName = "ArchetypeCli")
     {
         if (!Realms.TryGetValue("Custom", out Realm? realm))
             throw new InvalidOperationException("Custom realm not found in Keycloak configuration.");

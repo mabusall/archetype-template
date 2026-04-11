@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Tasheer.Core.Api.Repository.Migrations
+namespace Sample.Core.Api.Repository.Migrations
 {
     /// <inheritdoc />
     public partial class SampleDb_Init : Migration

@@ -137,7 +137,7 @@ public static class DependencyInjection
             app.UseHangfireDashboard("/hangfire", new DashboardOptions
             {
                 Authorization = [new HangfireDashboardAllowAllAuthorizationFilter()],
-                DashboardTitle = "Tasheer Jobs Dashboard"
+                DashboardTitle = "Archetype Jobs Dashboard"
             });
 
             foreach (HangfireJob? job in hangfireOptions.Tasks.Select(s => s.Value))
@@ -183,7 +183,7 @@ public static class DependencyInjection
         // Add HashiCorp Vault configuration source
         builder
             .Configuration
-            .AddEnvironmentVariables("TasheerKeys:")
+            .AddEnvironmentVariables("ArchetypeKeys:")
             .AddHashiCorpVaultAsync(VaultSettingOptions.ConfigurationKey)
             .ConfigureAwait(false)
             .GetAwaiter()

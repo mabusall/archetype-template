@@ -3,7 +3,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // Used only for Web API Projects, so we can add it before UseInfrastructureServices
 builder.AddApiServiceDefaults();
 
-// Add Tasheer Core Module and Infrastructure Services
+// Add Sample Core Module and Infrastructure Services
 builder.AddSampleCoreModule();
 builder.AddInfrastructureServices();
 
@@ -35,7 +35,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference(options =>
     {
         options
-            .WithTitle("Tasheer API")
+            .WithTitle("Sample API")
             .WithTheme(ScalarTheme.Kepler)
             .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
     });

@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Team" xml:space="preserve">
-    <value>Tasheer Team,</value>
+    <value>Archetype Team,</value>
   </data>
   <data name="DoNotReplyToThisMail" xml:space="preserve">
     <value>This E-Notification was automatically generated. Please do not reply to this mail.</value>
@@ -127,7 +127,7 @@
     <value>All Rights Reserved To Ministry of Hajj and Umrah</value>
   </data>
   <data name="WelcomeMessage" xml:space="preserve">
-    <value>Welcome to Tasheer</value>
+    <value>Welcome to Archetype</value>
   </data>
   <data name="VerifyEmailTemplate_YourOTPLabel" xml:space="preserve">
     <value>Your OTP is</value>

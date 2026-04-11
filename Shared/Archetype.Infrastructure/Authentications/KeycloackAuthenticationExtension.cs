@@ -22,13 +22,13 @@ public static class KeycloackAuthenticationExtension
                 throw new InvalidOperationException("Keycloak AddressUri is missing or empty.");
 
             Realm customRealm = keycloakOptions.GetCustomRealm();
-            RealmClient customClient = keycloakOptions.GetCustomClient("TasheerCli");
+            RealmClient customClient = keycloakOptions.GetCustomClient("ArchetypeCli");
 
             if (string.IsNullOrWhiteSpace(customRealm.Name))
                 throw new InvalidOperationException("Keycloak Custom Realm Name is missing or empty.");
 
             if (string.IsNullOrWhiteSpace(customClient.ClientId))
-                throw new InvalidOperationException("Keycloak Custom TasheerCli Client ClientId is missing or empty.");
+                throw new InvalidOperationException("Keycloak Custom ArchetypeCli Client ClientId is missing or empty.");
 
             // Build metadata address using your existing template:
             // "Metadata": "/realms/{0}/.well-known/openid-configuration"

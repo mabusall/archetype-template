@@ -19,7 +19,7 @@ public class ErrorMessageResources
         {
             if (ReferenceEquals(resourceMan, null))
             {
-                System.Resources.ResourceManager temp = new("Tasheer.Resources.ErrorMessageResources", typeof(ErrorMessageResources).Assembly);
+                System.Resources.ResourceManager temp = new("Archetype.Resources.ErrorMessageResources", typeof(ErrorMessageResources).Assembly);
                 resourceMan = temp;
             }
             return resourceMan;
