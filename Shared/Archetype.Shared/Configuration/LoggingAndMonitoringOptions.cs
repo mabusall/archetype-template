@@ -28,6 +28,8 @@ public class ElasticsearchOptions
     public bool IsEnabled { get; set; } = true;
     public required string AddressUri { get; set; }
     public string? ApiKey { get; set; }
+    public string? Username { get; set; }
+    public string? Password { get; set; }
 }
 
 public class ApmOptions

@@ -61,7 +61,9 @@ global using OpenTelemetry.Resources;
 global using OpenTelemetry.Trace;
 global using RabbitMQ.Client;
 global using Serilog;
+global using Serilog.Core;
 global using Serilog.Enrichers.Sensitive;
+global using Serilog.Events;
 global using Serilog.Exceptions;
 global using Serilog.Formatting.Compact;
 global using System.ComponentModel.DataAnnotations;
@@ -83,4 +85,3 @@ global using VaultSharp;
 global using VaultSharp.V1.AuthMethods.Token;
 global using VaultSharp.V1.Commons;
 global using VaultSharp.V1.SecretsEngines.KeyValue.V2;
-

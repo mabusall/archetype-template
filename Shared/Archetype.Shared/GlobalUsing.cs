@@ -1,5 +1,6 @@
 ﻿global using Archetype.Shared.Extensions;
 global using Archetype.Shared.Helper;
+global using Archetype.Shared.Interfaces;
 global using FluentValidation;
 global using FluentValidation.Results;
 global using ImageMagick;

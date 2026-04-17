@@ -5,6 +5,7 @@ public class KeycloakOptions
     public static string ConfigurationKey => "Keycloak";
 
     public required string AddressUri { get; set; }
+    public required string HealthCheckAddressUri { get; set; }
     public required EndPoints EndPoints { get; set; }
     public Dictionary<string, Realm> Realms { get; set; } = [];
 

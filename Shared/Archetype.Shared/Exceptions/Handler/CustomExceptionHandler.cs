@@ -1,6 +1,4 @@
-﻿using Archetype.Shared.Interfaces;
-
-namespace Archetype.Shared.Exceptions.Handler;
+﻿namespace Archetype.Shared.Exceptions.Handler;
 
 public class CustomExceptionHandler(ILogger<CustomExceptionHandler> logger)
     : IExceptionHandler

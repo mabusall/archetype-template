@@ -368,7 +368,6 @@ public static class DependencyInjection
                     CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
                     SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
                     QueuePollInterval = TimeSpan.FromSeconds(5),
-                    UseRecommendedIsolationLevel = true
                 }))
             .AddHangfireServer();
 
@@ -534,7 +533,7 @@ public static class DependencyInjection
                             maxRetryDelay: TimeSpan.FromSeconds(5),
                             errorNumbersToAdd: null);
                     })
-                    .UseExceptionProcessor();
+                .UseExceptionProcessor();
 
                     if (builder.Environment.IsDevelopment())
                     {
@@ -597,7 +596,7 @@ public static class DependencyInjection
                 options.AddEntityFrameworkOutbox<OutBoxDbContext>(efConfig =>
                 {
                     // configure which database lock provider to use
-                    efConfig.UseSqlServer();
+                    efConfig.UsePostgres();
 
                     // enable the bus outbox based on configuration
                     efConfig.UseBusOutbox(b =>
@@ -690,10 +689,8 @@ public static class DependencyInjection
                     .Enrich.WithProperty("Project", loggingConfig.Project)
                     .Enrich.WithProperty("Application", loggingConfig.Application)
 
-                    // Enrich with OpenTelemetry trace context
-                    .Enrich.WithProperty("TraceId", () => Activity.Current?.TraceId.ToString() ?? string.Empty)
-                    .Enrich.WithProperty("SpanId", () => Activity.Current?.SpanId.ToString() ?? string.Empty)
-                    .Enrich.WithProperty("ParentId", () => Activity.Current?.ParentId ?? string.Empty)
+                    // Enrich with OpenTelemetry trace context (per log event, reads Activity.Current dynamically)
+                    .Enrich.With<ActivityContextEnricher>()
 
                     .Enrich.WithExceptionDetails()
                     .Enrich.WithSensitiveDataMasking(options =>
@@ -743,7 +740,7 @@ public static class DependencyInjection
 
                             // Skip ECS template bootstrapping (Elasticsearch 8.11 compatibility)
                             // The data stream will be created automatically on first write
-                            opts.BootstrapMethod = BootstrapMethod.None;
+                            opts.BootstrapMethod = BootstrapMethod.Silent;
 
                             // Configure buffering for better performance
                             opts.ConfigureChannel = channelOpts =>
@@ -761,6 +758,10 @@ public static class DependencyInjection
                             if (!string.IsNullOrWhiteSpace(elasticsearchConfig.ApiKey))
                             {
                                 transport.Authentication(new ApiKey(elasticsearchConfig.ApiKey));
+                            }
+                            else if (!string.IsNullOrWhiteSpace(elasticsearchConfig.Username))
+                            {
+                                transport.Authentication(new BasicAuthentication(elasticsearchConfig.Username, elasticsearchConfig.Password ?? string.Empty));
                             }
                         }));
                 }
@@ -993,10 +994,10 @@ public static class DependencyInjection
                 tags: [ReadyTag, "cache", "redis"]);
         }
 
-        // Keycloak Health Check (if configured)
-        if (keycloakOptions?.AddressUri is not null)
+        if (keycloakOptions?.HealthCheckAddressUri is not null)
         {
-            string keycloakHealthUrl = $"{keycloakOptions.AddressUri}/health/ready";
+            // The Docs state /health/ready is the correct endpoint for "Readiness"
+            string keycloakHealthUrl = keycloakOptions.HealthCheckAddressUri.TrimEnd('/');
 
             healthChecks.AddUrlGroup(
                 new Uri(keycloakHealthUrl),
