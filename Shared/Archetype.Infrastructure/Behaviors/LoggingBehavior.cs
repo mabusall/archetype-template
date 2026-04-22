@@ -19,12 +19,12 @@ public class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavior<TReque
         long allocatedBytesBefore = GC.GetTotalAllocatedBytes(precise: false);
 
         // Create OpenTelemetry span for MediatR request
-        using Activity? activity = Activity.Current?.Source.StartActivity($"MediatR {requestName}", ActivityKind.Internal);
+        using Activity? activity = Activity.Current?.Source.StartActivity($"Archetype.Mediator {requestName}", ActivityKind.Internal);
 
         // Enrich activity with correlation and user context
         if (activity is not null)
         {
-            activity.SetTag("messaging.system", "MediatR");
+            activity.SetTag("messaging.system", "Archetype.Mediator");
             activity.SetTag("messaging.operation", "process");
             activity.SetTag("messaging.message_type", requestName);
 
