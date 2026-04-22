@@ -8,12 +8,12 @@ global using Archetype.Infrastructure.MessageBus;
 global using Archetype.Infrastructure.Services;
 global using Archetype.Infrastructure.Tasks;
 global using Archetype.Shared.Configuration;
-global using Archetype.Shared.CQRS;
 global using Archetype.Shared.DataProtection;
 global using Archetype.Shared.Exceptions;
 global using Archetype.Shared.Exceptions.Handler;
 global using Archetype.Shared.Extensions;
 global using Archetype.Shared.Interfaces;
+global using Archetype.Shared.Interfaces.CQRS;
 global using Archetype.Shared.Mediator;
 global using Archetype.Shared.Model;
 global using Elastic.Channels;
@@ -86,3 +86,4 @@ global using VaultSharp;
 global using VaultSharp.V1.AuthMethods.Token;
 global using VaultSharp.V1.Commons;
 global using VaultSharp.V1.SecretsEngines.KeyValue.V2;
+

@@ -45,7 +45,8 @@ namespace Archetype.Infrastructure.MessageBus.Migrations
                     RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Delivered = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastSequenceNumber = table.Column<long>(type: "bigint", nullable: true)
+                    LastSequenceNumber = table.Column<long>(type: "bigint", nullable: true),
+                    BusName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -130,6 +131,12 @@ namespace Archetype.Infrastructure.MessageBus.Migrations
                 columns: new[] { "OutboxId", "SequenceNumber" },
                 unique: true,
                 filter: "[OutboxId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OutboxState_BusName_Created",
+                schema: "MessageBus",
+                table: "OutboxState",
+                columns: new[] { "BusName", "Created" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_OutboxState_Created",

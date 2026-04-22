@@ -17,7 +17,7 @@ internal static class MediatorExtensions
 
             foreach (Type handlerType in handlerTypes)
             {
-                var handlers = handlerType
+                IEnumerable<Type> handlers = handlerType
                     .GetInterfaces()
                     .Where(IsRequestHandlerInterface);
 

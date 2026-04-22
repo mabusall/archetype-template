@@ -7,11 +7,11 @@ internal sealed class Mediator(IServiceProvider serviceProvider) : IMediator
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var requestType = request.GetType();
-        var responseType = typeof(TResponse);
-        var handlerType = typeof(IRequestHandler<,>).MakeGenericType(requestType, responseType);
-        var handler = serviceProvider.GetRequiredService(handlerType);
-        var behaviors = serviceProvider
+        Type requestType = request.GetType();
+        Type responseType = typeof(TResponse);
+        Type handlerType = typeof(IRequestHandler<,>).MakeGenericType(requestType, responseType);
+        object handler = serviceProvider.GetRequiredService(handlerType);
+        IEnumerable<object> behaviors = serviceProvider
             .GetServices(typeof(IPipelineBehavior<,>).MakeGenericType(requestType, responseType))
             .OfType<object>()
             .Reverse();

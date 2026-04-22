@@ -1,4 +1,4 @@
-namespace Archetype.Shared.CQRS;
+namespace Archetype.Shared.Interfaces.CQRS;
 
 public interface ICommandHandler<in TCommand, TResponse>
     : IRequestHandler<TCommand, TResponse>

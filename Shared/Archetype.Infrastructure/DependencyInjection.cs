@@ -523,22 +523,21 @@ public static class DependencyInjection
             .AddScoped<IBusService, BusService>()
             .AddDbContext<OutBoxDbContext>((_, options) =>
             {
-                if (!string.IsNullOrWhiteSpace(applicationOptions.DbConnection))
+                ArgumentException.ThrowIfNullOrWhiteSpace(applicationOptions.DbConnection);
+
+                options.UseSqlServer(applicationOptions.DbConnection, sqlOptions =>
                 {
-                    options.UseSqlServer(applicationOptions.DbConnection, sqlOptions =>
-                    {
-                        sqlOptions.EnableRetryOnFailure(
-                            maxRetryCount: 10,
-                            maxRetryDelay: TimeSpan.FromSeconds(5),
-                            errorNumbersToAdd: null);
-                    })
+                    sqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 10,
+                        maxRetryDelay: TimeSpan.FromSeconds(5),
+                        errorNumbersToAdd: null);
+                })
                 .UseExceptionProcessor();
 
-                    if (builder.Environment.IsDevelopment())
-                    {
-                        options.EnableDetailedErrors();
-                        options.EnableSensitiveDataLogging();
-                    }
+                if (builder.Environment.IsDevelopment())
+                {
+                    options.EnableDetailedErrors();
+                    options.EnableSensitiveDataLogging();
                 }
             })
 
@@ -595,7 +594,7 @@ public static class DependencyInjection
                 options.AddEntityFrameworkOutbox<OutBoxDbContext>(efConfig =>
                 {
                     // configure which database lock provider to use
-                    efConfig.UsePostgres();
+                    efConfig.UseSqlServer();
 
                     // enable the bus outbox based on configuration
                     efConfig.UseBusOutbox(b =>
