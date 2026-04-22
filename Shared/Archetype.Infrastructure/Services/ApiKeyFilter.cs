@@ -3,7 +3,7 @@
 public class ApiKeyFilter : IEndpointFilter
 {
     // You can choose a different header name.
-    private readonly string _apiKeyHeaderName = "X-Api-Key";
+    private readonly string _apiKeyHeaderName = "x-api-key";
 
     public static string ApiKey { get; set; } = default!;
 

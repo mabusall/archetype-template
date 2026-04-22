@@ -5,7 +5,7 @@ internal class GetListOrderCommandHandler(ISampleDbUnitOfWork uow)
 {
     public async Task<PaginatedList<OrderDto>> Handle(GetListOrderQuery query, CancellationToken cancellationToken)
     {
-        IQueryable<Order> querable = uow
+        var querable = uow
             .OrdersRepository
             .AsQueryable(false);
 
