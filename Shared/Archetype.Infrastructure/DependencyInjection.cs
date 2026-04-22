@@ -269,8 +269,8 @@ public static class DependencyInjection
             .AddMediatR(config =>
             {
                 config.RegisterServicesFromAssemblies([.. assemblies]);
-                config.AddOpenBehavior(typeof(ValidationBehavior<,>));
                 config.AddOpenBehavior(typeof(LoggingBehavior<,>));
+                config.AddOpenBehavior(typeof(ValidationBehavior<,>));
             })
 
             // Configure rate limiting
