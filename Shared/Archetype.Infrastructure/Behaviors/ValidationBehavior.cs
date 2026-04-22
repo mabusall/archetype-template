@@ -15,10 +15,9 @@ public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TReq
             await Task.WhenAll(validators.Select(s => s.ValidateAsync(validationContext, cancellationToken)));
 
         List<FluentValidation.Results.ValidationFailure> failures =
-            validationResults
+            [.. validationResults
             .Where(w => w.Errors.Count != 0)
-            .SelectMany(vr => vr.Errors)
-            .ToList();
+            .SelectMany(vr => vr.Errors)];
 
         if (failures.Count != 0) throw new FluentValidation.ValidationException(failures);
 
