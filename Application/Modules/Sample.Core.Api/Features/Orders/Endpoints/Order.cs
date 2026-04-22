@@ -20,7 +20,7 @@ public static class OrderEndpoints
             .WithApiVersionSet(versionSet);
 
         group.MapPost("/", async ([FromBody] CreateOrderCommand command,
-                                  ISender sender,
+                                  IMediator sender,
                                   CancellationToken cancellationToken) =>
         {
             CreateOrderResult response = await sender.Send(command, cancellationToken);
@@ -39,7 +39,7 @@ public static class OrderEndpoints
         .RequireRateLimiting(TenRequestsPerMinutePolicy);
 
         group.MapGet("/", async ([AsParameters] GetListOrderQuery query,
-                                 ISender sender,
+                                 IMediator sender,
                                  CancellationToken cancellationToken) =>
         {
             PaginatedList<OrderDto> response = await sender.Send(query, cancellationToken);
@@ -60,11 +60,11 @@ public static class OrderEndpoints
         .RequireRateLimiting(TenRequestsPerMinutePolicy);
 
         group.MapDelete("/{orderId:int}", async ([FromRoute] int orderId,
-                                                 ISender sender,
+                                                 IMediator sender,
                                                  CancellationToken cancellationToken) =>
         {
             DeleteOrderResult response = await sender.Send(new DeleteOrderCommand(orderId),
-                                             cancellationToken);
+                                                           cancellationToken);
 
             return Results.Ok(response);
         })

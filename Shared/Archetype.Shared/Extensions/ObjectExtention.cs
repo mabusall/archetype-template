@@ -6,8 +6,8 @@ public static class ObjectExtention
     {
         /// <summary>
         /// Converts a consumer type string to an endpoint name with prefix.
-        /// Example: "FlixHub.Notification.EventHandlers.Handlers.SendEmailConsumer, FlixHub.Notification"
-        /// with prefix "tasheer-" becomes "tasheer-send-email-consumer"
+        /// Example: "Archetype.Notification.EventHandlers.Handlers.SendEmailConsumer, FlixHub.Notification"
+        /// with prefix "archetype-" becomes "tasheer-send-email-consumer"
         /// </summary>
         public string ToEndpointName(string prefix = "")
         {

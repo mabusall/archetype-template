@@ -265,10 +265,9 @@ public static class DependencyInjection
             // Add FluentValidation
             .AddValidatorsFromAssemblies(assemblies, includeInternalTypes: true)
 
-            // Add MediatR with behaviors
-            .AddMediatR(config =>
+            // Add custom Archetype Mediator with behaviors
+            .AddArchetypeMediator(assemblies, config =>
             {
-                config.RegisterServicesFromAssemblies([.. assemblies]);
                 config.AddOpenBehavior(typeof(LoggingBehavior<,>));
                 config.AddOpenBehavior(typeof(ValidationBehavior<,>));
             })

@@ -1,4 +1,4 @@
-﻿namespace Archetype.Infrastructure.CQRS;
+namespace Archetype.Shared.CQRS;
 
 public interface IQueryHandler<in TQuery, TResponse>
     : IRequestHandler<TQuery, TResponse>
