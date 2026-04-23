@@ -9,7 +9,6 @@ global using Archetype.Shared.Interfaces.CQRS;
 global using Archetype.Shared.Mediator;
 global using Archetype.Shared.Model;
 global using Asp.Versioning.Builder;
-global using EntityFramework.Exceptions.SqlServer;
 global using FluentValidation;
 global using Hangfire;
 global using Mapster;

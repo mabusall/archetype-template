@@ -523,16 +523,7 @@ public static class DependencyInjection
             .AddScoped<IBusService, BusService>()
             .AddDbContext<OutBoxDbContext>((_, options) =>
             {
-                ArgumentException.ThrowIfNullOrWhiteSpace(applicationOptions.DbConnection);
-
-                options.UseSqlServer(applicationOptions.DbConnection, sqlOptions =>
-                {
-                    sqlOptions.EnableRetryOnFailure(
-                        maxRetryCount: 10,
-                        maxRetryDelay: TimeSpan.FromSeconds(5),
-                        errorNumbersToAdd: null);
-                })
-                .UseExceptionProcessor();
+                options.UseConfiguredProvider(applicationOptions);
 
                 if (builder.Environment.IsDevelopment())
                 {
@@ -593,8 +584,8 @@ public static class DependencyInjection
 
                 options.AddEntityFrameworkOutbox<OutBoxDbContext>(efConfig =>
                 {
-                    // configure which database lock provider to use
-                    efConfig.UseSqlServer();
+                    // configure which database lock provider to use based on appsettings
+                    efConfig.ConfigureMassTransitOutbox(applicationOptions);
 
                     // enable the bus outbox based on configuration
                     efConfig.UseBusOutbox(b =>
