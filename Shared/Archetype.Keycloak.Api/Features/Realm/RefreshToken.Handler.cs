@@ -4,5 +4,5 @@ internal class KeycloakRealmRefreshTokenCommandHandler(KeycloakApiClient keycloa
     : ICommandHandler<KeycloakRealmRefreshTokenCommand, KeycloakRealmRefreshTokenResult>
 {
     public async Task<KeycloakRealmRefreshTokenResult> Handle(KeycloakRealmRefreshTokenCommand command, CancellationToken cancellationToken)
-        => await keycloakApiClient.Realm.RefreshToken(command, cancellationToken);
+        => await keycloakApiClient.Realm.RefreshTokenAsync(command, cancellationToken);
 }

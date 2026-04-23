@@ -4,5 +4,5 @@ internal class KeycloakRealmResetPasswordCommandHandler(KeycloakApiClient keyclo
     : ICommandHandler<KeycloakRealmResetPasswordCommand, KeycloakSuccessStatusResult>
 {
     public async Task<KeycloakSuccessStatusResult> Handle(KeycloakRealmResetPasswordCommand command, CancellationToken cancellationToken)
-        => await keycloakApiClient.Realm.ResetPassword(command, cancellationToken);
+        => await keycloakApiClient.Realm.ResetPasswordAsync(command, cancellationToken);
 }

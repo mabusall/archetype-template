@@ -4,5 +4,5 @@ internal class KeycloakRealmLogoutCommandHandler(KeycloakApiClient keycloakApiCl
     : ICommandHandler<KeycloakRealmLogoutCommand, KeycloakSuccessStatusResult>
 {
     public async Task<KeycloakSuccessStatusResult> Handle(KeycloakRealmLogoutCommand command, CancellationToken cancellationToken)
-        => await keycloakApiClient.Realm.Logout(command, cancellationToken);
+        => await keycloakApiClient.Realm.LogoutAsync(command, cancellationToken);
 }
