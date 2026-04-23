@@ -30,14 +30,7 @@ static class DependencyInjection
             // add db context
             .AddDbContext<SampleDbContext>((serviceProvider, options) =>
             {
-                options.UseSqlServer(applicationOptions.DbConnection, sqlOptions =>
-                {
-                    sqlOptions.EnableRetryOnFailure(
-                        maxRetryCount: 10,
-                        maxRetryDelay: TimeSpan.FromSeconds(5),
-                        errorNumbersToAdd: null);
-                })
-                .UseExceptionProcessor();
+                options.UseConfiguredProvider(applicationOptions);
 
                 if (builder.Environment.IsDevelopment())
                 {

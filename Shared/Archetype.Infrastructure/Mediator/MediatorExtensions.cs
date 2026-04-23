@@ -2,39 +2,40 @@ namespace Archetype.Infrastructure.Mediator;
 
 internal static class MediatorExtensions
 {
-    internal static IServiceCollection AddArchetypeMediator(this IServiceCollection services,
-                                                            IReadOnlyCollection<Assembly> assemblies,
-                                                            Action<MediatorConfiguration> configure)
+    extension(IServiceCollection services)
     {
-        services.AddScoped<IMediator, Mediator>();
-
-        foreach (Assembly assembly in assemblies)
+        internal IServiceCollection AddArchetypeMediator(IReadOnlyCollection<Assembly> assemblies,
+                                                                Action<MediatorConfiguration> configure)
         {
-            IEnumerable<Type> handlerTypes = assembly
-                .GetTypes()
-                .Where(t => t is { IsAbstract: false, IsInterface: false } &&
-                            t.GetInterfaces().Any(IsRequestHandlerInterface));
+            services.AddScoped<IMediator, Mediator>();
 
-            foreach (Type handlerType in handlerTypes)
+            foreach (Assembly assembly in assemblies)
             {
-                IEnumerable<Type> handlers = handlerType
-                    .GetInterfaces()
-                    .Where(IsRequestHandlerInterface);
+                IEnumerable<Type> handlerTypes = assembly
+                    .GetTypes()
+                    .Where(t => t is { IsAbstract: false, IsInterface: false } &&
+                                t.GetInterfaces().Any(IsRequestHandlerInterface));
 
-                foreach (Type handlerInterface in handlers)
+                foreach (Type handlerType in handlerTypes)
                 {
-                    services.AddScoped(handlerInterface, handlerType);
+                    var handlers = handlerType
+                        .GetInterfaces()
+                        .Where(IsRequestHandlerInterface);
+
+                    foreach (Type handlerInterface in handlers)
+                    {
+                        services.AddScoped(handlerInterface, handlerType);
+                    }
                 }
             }
+
+            configure(new MediatorConfiguration(services));
+
+            return services;
         }
-
-        configure(new MediatorConfiguration(services));
-
-        return services;
     }
 
     private static bool IsRequestHandlerInterface(Type type) =>
         type.IsGenericType &&
         type.GetGenericTypeDefinition() == typeof(IRequestHandler<,>);
 }
-
