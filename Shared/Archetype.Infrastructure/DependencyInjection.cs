@@ -361,13 +361,7 @@ public static class DependencyInjection
                 {
                     ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore,
                 })
-                .UseSqlServerStorage(applicationOptions.DbConnection, new SqlServerStorageOptions
-                {
-                    SchemaName = hangfireOptions.SchemaName,
-                    CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
-                    SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
-                    QueuePollInterval = TimeSpan.FromSeconds(5),
-                }))
+                .UseConfiguredHangfireStorage(applicationOptions, hangfireOptions))
             .AddHangfireServer();
 
         return builder;
@@ -963,12 +957,25 @@ public static class DependencyInjection
                     },
                     name: "rabbitmq",
                     failureStatus: HealthStatus.Degraded,
-                    tags: [ReadyTag, "messaging", "rabbitmq"])
-                .AddSqlServer(
+                    tags: [ReadyTag, "messaging", "rabbitmq"]);
+
+            // Add database health check based on configured provider
+            if (applicationOptions.DbProviderType == DatabaseProviderType.PostgreSql)
+            {
+                healthChecks.AddNpgSql(
+                    connectionString: applicationOptions.DbConnection,
+                    name: "npgsql-outbox",
+                    failureStatus: HealthStatus.Degraded,
+                    tags: [ReadyTag, "database", "npgsql", "outbox"]);
+            }
+            else
+            {
+                healthChecks.AddSqlServer(
                     connectionString: applicationOptions.DbConnection,
                     name: "sqlserver-outbox",
                     failureStatus: HealthStatus.Degraded,
                     tags: [ReadyTag, "database", "sqlserver", "outbox"]);
+            }
         }
 
         // Add Redis health check

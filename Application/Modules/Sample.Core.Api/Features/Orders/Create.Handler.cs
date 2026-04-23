@@ -5,7 +5,7 @@ internal class CreateOrderCommandHandler(ISampleDbUnitOfWork uow)
 {
     public async Task<CreateOrderResult> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
     {
-        var order = command.Adapt<Order>();
+        Order order = command.Adapt<Order>();
 
         // create random price for the order between 5000 and 25000 with decimal points
         order.Price = (decimal)(new Random().Next(5000, 25000) + new Random().NextDouble());

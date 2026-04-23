@@ -15,7 +15,7 @@ public static class OrderEndpoints
             .Build();
 
         // Map group with versioning (v1/order)
-        var group = app
+        RouteGroupBuilder group = app
             .MapGroup("v{version:apiVersion}/order")
             .WithApiVersionSet(versionSet);
 
@@ -23,7 +23,7 @@ public static class OrderEndpoints
                                   IMediator sender,
                                   CancellationToken cancellationToken) =>
         {
-            var response = await sender.Send(command, cancellationToken);
+            CreateOrderResult response = await sender.Send(command, cancellationToken);
 
             return Results.Ok(response);
         })
@@ -42,7 +42,7 @@ public static class OrderEndpoints
                                  IMediator sender,
                                  CancellationToken cancellationToken) =>
         {
-            var response = await sender.Send(query, cancellationToken);
+            PaginatedList<OrderDto> response = await sender.Send(query, cancellationToken);
 
             return Results.Ok(response);
         })
@@ -63,7 +63,7 @@ public static class OrderEndpoints
                                                  IMediator sender,
                                                  CancellationToken cancellationToken) =>
         {
-            var response = await sender.Send(new DeleteOrderCommand(orderId),
+            DeleteOrderResult response = await sender.Send(new DeleteOrderCommand(orderId),
                                                            cancellationToken);
 
             return Results.Ok(response);

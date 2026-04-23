@@ -24,6 +24,7 @@ global using Elastic.Transport;
 global using FluentValidation;
 global using Hangfire;
 global using Hangfire.Dashboard;
+global using Hangfire.PostgreSql;
 global using Hangfire.Server;
 global using Hangfire.SqlServer;
 global using HealthChecks.UI.Client;

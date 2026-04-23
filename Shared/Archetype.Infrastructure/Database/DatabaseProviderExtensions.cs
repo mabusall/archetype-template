@@ -41,6 +41,37 @@ public static class DatabaseProviderExtensions
         }
     }
 
+    extension(IGlobalConfiguration config)
+    {
+        public IGlobalConfiguration UseConfiguredHangfireStorage(ApplicationOptions applicationOptions,
+                                                                  HangfireOptions hangfireOptions)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(applicationOptions.DbConnection);
+
+            return applicationOptions.DbProviderType switch
+            {
+                DatabaseProviderType.SqlServer => config.UseSqlServerStorage(applicationOptions.DbConnection, new SqlServerStorageOptions
+                {
+                    SchemaName = hangfireOptions.SchemaName,
+                    CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+                    SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+                    QueuePollInterval = TimeSpan.FromSeconds(5),
+                }),
+
+                DatabaseProviderType.PostgreSql => config.UsePostgreSqlStorage(options =>
+                    options.UseNpgsqlConnection(applicationOptions.DbConnection), new PostgreSqlStorageOptions
+                    {
+                        SchemaName = hangfireOptions.SchemaName,
+                        QueuePollInterval = TimeSpan.FromSeconds(5),
+                    }),
+
+                _ => throw new InvalidOperationException(
+                    $"Unsupported database provider: '{applicationOptions.DbProviderType}'. " +
+                    $"Supported values are: {string.Join(", ", Enum.GetNames<DatabaseProviderType>())}.")
+            };
+        }
+    }
+
     extension(IEntityFrameworkOutboxConfigurator configurator)
     {
         public void ConfigureMassTransitOutbox(ApplicationOptions applicationOptions)
