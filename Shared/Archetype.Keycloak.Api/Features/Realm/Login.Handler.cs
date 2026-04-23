@@ -4,5 +4,5 @@ internal class KeycloakRealmLoginCommandHandler(KeycloakApiClient keycloakApiCli
     : ICommandHandler<KeycloakRealmLoginCommand, KeycloakRealmLoginResult>
 {
     public async Task<KeycloakRealmLoginResult> Handle(KeycloakRealmLoginCommand command, CancellationToken cancellationToken)
-        => await keycloakApiClient.Realm.Login(command, cancellationToken);
+        => await keycloakApiClient.Realm.LoginAsync(command, cancellationToken);
 }

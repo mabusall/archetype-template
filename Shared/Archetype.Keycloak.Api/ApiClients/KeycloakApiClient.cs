@@ -129,10 +129,10 @@ public interface IKeycloakRealmClient
     Task<KeycloakRealmGetUserIntrospectResult> GetUserIntrospectAsync(KeycloakRealmGetUserIntrospectQuery query, CancellationToken cancellationToken);
     Task<IList<KeycloakRealmGetUserSessionsResult>> GetUserSessionsAsync(KeycloakRealmGetUserSessionsQuery query, CancellationToken cancellationToken);
     Task<KeycloakSuccessStatusResult> KillUserSessionAsync(KeycloakRealmKillUserSessionCommand command, CancellationToken cancellationToken);
-    Task<KeycloakRealmLoginResult> Login(KeycloakRealmLoginCommand command, CancellationToken cancellationToken);
-    Task<KeycloakSuccessStatusResult> Logout(KeycloakRealmLogoutCommand command, CancellationToken cancellationToken);
-    Task<KeycloakRealmRefreshTokenResult> RefreshToken(KeycloakRealmRefreshTokenCommand command, CancellationToken cancellationToken);
-    Task<KeycloakSuccessStatusResult> ResetPassword(KeycloakRealmResetPasswordCommand command, CancellationToken cancellationToken);
+    Task<KeycloakRealmLoginResult> LoginAsync(KeycloakRealmLoginCommand command, CancellationToken cancellationToken);
+    Task<KeycloakSuccessStatusResult> LogoutAsync(KeycloakRealmLogoutCommand command, CancellationToken cancellationToken);
+    Task<KeycloakRealmRefreshTokenResult> RefreshTokenAsync(KeycloakRealmRefreshTokenCommand command, CancellationToken cancellationToken);
+    Task<KeycloakSuccessStatusResult> ResetPasswordAsync(KeycloakRealmResetPasswordCommand command, CancellationToken cancellationToken);
 }
 
 public class KeycloakRealmClient(HttpClient httpClient,
@@ -381,7 +381,7 @@ public class KeycloakRealmClient(HttpClient httpClient,
         return new KeycloakSuccessStatusResult(true);
     }
 
-    public async Task<KeycloakRealmLoginResult> Login(KeycloakRealmLoginCommand command, CancellationToken cancellationToken)
+    public async Task<KeycloakRealmLoginResult> LoginAsync(KeycloakRealmLoginCommand command, CancellationToken cancellationToken)
     {
         KeycloakOptions options = appSettingsKeyManagement.KeycloakOptions;
         Realm clientRealm = options!.GetCustomRealm();
@@ -414,7 +414,7 @@ public class KeycloakRealmClient(HttpClient httpClient,
              ?? throw new InvalidOperationException(ErrorMessageResources.SerializationFailed);
     }
 
-    public async Task<KeycloakSuccessStatusResult> Logout(KeycloakRealmLogoutCommand command, CancellationToken cancellationToken)
+    public async Task<KeycloakSuccessStatusResult> LogoutAsync(KeycloakRealmLogoutCommand command, CancellationToken cancellationToken)
     {
         KeycloakOptions options = appSettingsKeyManagement.KeycloakOptions;
         Realm clientRealm = options!.GetCustomRealm();
@@ -440,7 +440,7 @@ public class KeycloakRealmClient(HttpClient httpClient,
         return new KeycloakSuccessStatusResult(true);
     }
 
-    public async Task<KeycloakRealmRefreshTokenResult> RefreshToken(KeycloakRealmRefreshTokenCommand command, CancellationToken cancellationToken)
+    public async Task<KeycloakRealmRefreshTokenResult> RefreshTokenAsync(KeycloakRealmRefreshTokenCommand command, CancellationToken cancellationToken)
     {
         KeycloakOptions options = appSettingsKeyManagement.KeycloakOptions;
         Realm clientRealm = options!.GetCustomRealm();
@@ -479,7 +479,7 @@ public class KeycloakRealmClient(HttpClient httpClient,
             ?? throw new InvalidOperationException(ErrorMessageResources.SerializationFailed);
     }
 
-    public async Task<KeycloakSuccessStatusResult> ResetPassword(KeycloakRealmResetPasswordCommand command, CancellationToken cancellationToken)
+    public async Task<KeycloakSuccessStatusResult> ResetPasswordAsync(KeycloakRealmResetPasswordCommand command, CancellationToken cancellationToken)
     {
         KeycloakRealmGetUserResult userInfo = (await GetUserAsync(new KeycloakRealmGetUserQuery(command.Email), cancellationToken))
             .FirstOrDefault()
