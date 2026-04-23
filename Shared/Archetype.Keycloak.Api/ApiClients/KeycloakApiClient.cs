@@ -1,6 +1,6 @@
 ﻿namespace Archetype.Keycloak.Api.ApiClients;
 
-internal class KeycloakApiClient
+public class KeycloakApiClient
 {
     private readonly KeycloakAdminClient _admin;
 
