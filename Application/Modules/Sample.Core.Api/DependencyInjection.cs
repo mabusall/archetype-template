@@ -1,6 +1,4 @@
-﻿[assembly: InternalsVisibleTo("Sample.Api")]
-
-namespace Sample.Core.Api;
+﻿namespace Sample.Core.Api;
 
 static class DependencyInjection
 {

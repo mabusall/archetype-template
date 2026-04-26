@@ -8,12 +8,13 @@
 
 	<ItemGroup>
 		<Folder Include="Features\Orders\Endpoints\" />
+		<InternalsVisibleTo Include="Sample.Api" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\..\Shared\Archetype.Infrastructure\Archetype.Infrastructure.csproj" />
-	  <ProjectReference Include="..\..\..\Shared\Archetype.Keycloak.Api\Archetype.Keycloak.Api.csproj" />
-	  <ProjectReference Include="..\..\Services\Sample.Notification\Sample.Notification.csproj" />
+		<ProjectReference Include="..\..\..\Shared\Archetype.Infrastructure\Archetype.Infrastructure.csproj" />
+		<ProjectReference Include="..\..\..\Shared\Archetype.Keycloak.Api\Archetype.Keycloak.Api.csproj" />
+		<ProjectReference Include="..\..\Services\Sample.Notification\Sample.Notification.csproj" />
 	</ItemGroup>
 
 </Project>

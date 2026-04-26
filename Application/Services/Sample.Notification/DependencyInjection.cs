@@ -1,5 +1,4 @@
-﻿
-namespace Sample.Notification;
+﻿namespace Sample.Notification;
 
 public static class DependencyInjection
 {
