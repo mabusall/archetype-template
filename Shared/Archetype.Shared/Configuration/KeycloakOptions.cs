@@ -75,4 +75,6 @@ public class EndPoints
     public required string UserInfo { get; set; }
     public required string Introspect { get; set; }
     public required string Keys { get; set; }
+    public required string Issuer { get; set; }
+    public required string Audience { get; set; }
 }
