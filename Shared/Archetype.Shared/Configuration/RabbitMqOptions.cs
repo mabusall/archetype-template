@@ -14,10 +14,6 @@ public class RabbitMqOptions
     public bool AutoDelete { get; set; }
     public bool DisableDeliveryService { get; set; }
     public bool DisableInboxCleanupService { get; set; }
-    public int PrefetchCount { get; set; }
-    public int ConcurrentMessageLimit { get; set; }
-    public int RetryCount { get; set; }
-    public TimeSpan Interval { get; set; }
     public Dictionary<string, ConsumerEndpoint> Consumers { get; set; } = [];
 }
 

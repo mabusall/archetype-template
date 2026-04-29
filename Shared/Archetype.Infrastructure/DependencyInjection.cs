@@ -555,15 +555,16 @@ public static class DependencyInjection
                     busFactoryConfigurator.ReceiveEndpoint(endpointName,
                         e =>
                         {
-                            e.ConfigureConsumer(registration, consumerType);
-                            e.UseMessageRetry(r => r.Interval(endpoint.RetryCount, endpoint.Interval));
                             e.PrefetchCount = endpoint.PrefetchCount;
                             e.ConcurrentMessageLimit = endpoint.ConcurrentMessageLimit;
-
+                            e.UseMessageRetry(r => r.Interval(endpoint.RetryCount, endpoint.Interval));
                             if (endpoint.UseDatabase)
                             {
                                 e.UseEntityFrameworkOutbox<OutBoxDbContext>(registration);
                             }
+
+                            // finally configure the consumer as per endpoint configuration
+                            e.ConfigureConsumer(registration, consumerType);
                         });
                 });
             }
@@ -612,12 +613,9 @@ public static class DependencyInjection
                     config.UseConsumeFilter(typeof(LoggingConsumeFilter<>), context);
 
                     // applies to all receive endpoints
-                    config.PrefetchCount = rabbitMqOptions.PrefetchCount;
-                    config.ConcurrentMessageLimit = rabbitMqOptions.ConcurrentMessageLimit;
                     config.AutoStart = rabbitMqOptions.AutoStart;
                     config.AutoDelete = rabbitMqOptions.AutoDelete;
 
-                    config.UseMessageRetry(retry => retry.Interval(rabbitMqOptions.RetryCount, rabbitMqOptions.Interval));
                     config.Host(new Uri(rabbitMqOptions.AddressUri), host =>
                     {
                         host.Username(rabbitMqOptions.UserName);

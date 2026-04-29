@@ -108,6 +108,9 @@ public class LoggingConsumeFilter<T>(ILogger<LoggingConsumeFilter<T>> logger) : 
                 messageType,
                 sw.Elapsed.TotalSeconds,
                 ex.Message);
+
+            // Re-throw to ensure message is not acknowledged and can be retried
+            throw;
         }
     }
 

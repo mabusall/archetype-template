@@ -31,4 +31,3 @@ global using Sample.Notification;
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
 global using System.Reflection;
-global using System.Runtime.CompilerServices;
