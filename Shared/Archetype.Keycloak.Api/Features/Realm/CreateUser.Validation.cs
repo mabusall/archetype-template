@@ -16,5 +16,8 @@ public class KeycloakRealmCreateUserCommandValidator : AbstractValidator<Keycloa
         RuleFor(r => r.LastName)
             .NotEmpty()
             .WithMessage(ErrorMessageResources.NotEmpty);
+        RuleFor(r => r.Password)
+            .NotEmpty()
+            .WithMessage(ErrorMessageResources.NotEmpty);
     }
 }

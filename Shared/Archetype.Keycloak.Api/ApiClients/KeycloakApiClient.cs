@@ -133,6 +133,7 @@ public interface IKeycloakRealmClient
     Task<KeycloakSuccessStatusResult> LogoutAsync(KeycloakRealmLogoutCommand command, CancellationToken cancellationToken);
     Task<KeycloakRealmRefreshTokenResult> RefreshTokenAsync(KeycloakRealmRefreshTokenCommand command, CancellationToken cancellationToken);
     Task<KeycloakSuccessStatusResult> ResetPasswordAsync(KeycloakRealmResetPasswordCommand command, CancellationToken cancellationToken);
+    Task<KeycloakSuccessStatusResult> ActivateUserAsync(KeycloakRealmActivateUserCommand command, CancellationToken cancellationToken);
 }
 
 public class KeycloakRealmClient(HttpClient httpClient,
@@ -148,12 +149,21 @@ public class KeycloakRealmClient(HttpClient httpClient,
         // prepare create user body
         var createUserBody = new
         {
+            enabled = false,
+            emailVerified = false,
             username = command.UserName,
             email = command.Email,
-            enabled = command.IsActive,
             firstName = command.FirstName,
             lastName = command.LastName,
-            emailVerified = true,
+            credentials = new[]
+            {
+                new
+                {
+                    type = "password",
+                    value = command.Password,
+                    temporary = false,
+                }
+            },
         };
 
         // create body request
@@ -164,7 +174,7 @@ public class KeycloakRealmClient(HttpClient httpClient,
         // create user process
         KeycloakOptions options = appSettingsKeyManagement.KeycloakOptions;
         Realm clientRealm = options!.GetCustomRealm();
-        string url = string.Format(options.EndPoints.CreateUser, clientRealm.Name);
+        string url = string.Format(options.EndPoints.CreateUpdateUser, clientRealm.Name);
         using StringContent content = new(body, Encoding.UTF8, MediaTypeNames.Application.Json);
         using HttpRequestMessage httpRequest = new(HttpMethod.Post, url)
         {
@@ -216,7 +226,7 @@ public class KeycloakRealmClient(HttpClient httpClient,
 
         KeycloakOptions options = appSettingsKeyManagement.KeycloakOptions;
         Realm clientRealm = options!.GetCustomRealm();
-        RealmClient customClient = options.GetCustomClient("ArchetypeCli");
+        RealmClient customClient = options.GetCustomClient("FlixHubCli");
         string url = string.Format(options.EndPoints.TokenExchange, clientRealm.Name);
         using FormUrlEncodedContent content = new(new Dictionary<string, string>
         {
@@ -302,7 +312,7 @@ public class KeycloakRealmClient(HttpClient httpClient,
     {
         KeycloakOptions options = appSettingsKeyManagement.KeycloakOptions;
         Realm clientRealm = options!.GetCustomRealm();
-        RealmClient customClient = options.GetCustomClient("ArchetypeCli");
+        RealmClient customClient = options.GetCustomClient("FlixHubCli");
         string url = string.Format(options!.EndPoints.Introspect, clientRealm.Name);
         using FormUrlEncodedContent content = new(new Dictionary<string, string>
         {
@@ -385,7 +395,7 @@ public class KeycloakRealmClient(HttpClient httpClient,
     {
         KeycloakOptions options = appSettingsKeyManagement.KeycloakOptions;
         Realm clientRealm = options!.GetCustomRealm();
-        RealmClient customClient = options.GetCustomClient("ArchetypeCli");
+        RealmClient customClient = options.GetCustomClient("FlixHubCli");
         string url = string.Format($"{options.EndPoints.TokenExchange}", clientRealm.Name);
         using FormUrlEncodedContent content = new(new Dictionary<string, string>
         {
@@ -418,7 +428,7 @@ public class KeycloakRealmClient(HttpClient httpClient,
     {
         KeycloakOptions options = appSettingsKeyManagement.KeycloakOptions;
         Realm clientRealm = options!.GetCustomRealm();
-        RealmClient customClient = options.GetCustomClient("ArchetypeCli");
+        RealmClient customClient = options.GetCustomClient("FlixHubCli");
         string url = string.Format(options.EndPoints.LogoutUser, clientRealm.Name);
         using FormUrlEncodedContent content = new(new Dictionary<string, string>
         {
@@ -444,7 +454,7 @@ public class KeycloakRealmClient(HttpClient httpClient,
     {
         KeycloakOptions options = appSettingsKeyManagement.KeycloakOptions;
         Realm clientRealm = options!.GetCustomRealm();
-        RealmClient customClient = options.GetCustomClient("ArchetypeCli");
+        RealmClient customClient = options.GetCustomClient("FlixHubCli");
         string url = string.Format(options.EndPoints.TokenExchange, clientRealm.Name);
         using FormUrlEncodedContent content = new(new Dictionary<string, string>
         {
@@ -503,7 +513,7 @@ public class KeycloakRealmClient(HttpClient httpClient,
 
         KeycloakOptions options = appSettingsKeyManagement.KeycloakOptions;
         Realm clientRealm = options!.GetCustomRealm();
-        string url = string.Format($"{options.EndPoints.CreateUser}/{userInfo.Id}/reset-password",
+        string url = string.Format($"{options.EndPoints.CreateUpdateUser}/{userInfo.Id}/reset-password",
             clientRealm.Name);
         using StringContent content = new(body, Encoding.UTF8, MediaTypeNames.Application.Json);
 
@@ -511,6 +521,50 @@ public class KeycloakRealmClient(HttpClient httpClient,
         {
             Content = content
         };
+        httpClient.AttachBearerAuthentication(login.AccessToken!);
+
+        // send the request
+        HttpResponseMessage response = await httpClient.SendAsync(httpRequest, cancellationToken);
+
+        // logout admin session
+        await adminClient.LogoutAsync(login.RefreshToken!, cancellationToken);
+
+        // validate the response
+        response.EnsureSuccessStatusCode();
+
+        return new KeycloakSuccessStatusResult(true);
+    }
+
+    public async Task<KeycloakSuccessStatusResult> ActivateUserAsync(KeycloakRealmActivateUserCommand command, CancellationToken cancellationToken)
+    {
+        // get user info
+        var user = (await GetUserAsync(new KeycloakRealmGetUserQuery(command.Email), cancellationToken))
+            .FirstOrDefault();
+
+        // get keycloak admin token
+        KeycloakAdminLoginResult login = await adminClient.LoginAsync(cancellationToken);
+
+        var userBody = new
+        {
+            enabled = command.Flag,
+            emailVerified = command.Flag,
+        };
+
+        // create body request
+        string body = await JsonContent
+            .Create(userBody)
+            .ReadAsStringAsync(cancellationToken);
+
+        KeycloakOptions options = appSettingsKeyManagement.KeycloakOptions;
+        Realm clientRealm = options!.GetCustomRealm();
+        string url = $"{string.Format(options.EndPoints.CreateUpdateUser, clientRealm.Name)}/{user!.Id}";
+        using StringContent content = new(body, Encoding.UTF8, MediaTypeNames.Application.Json);
+        using HttpRequestMessage httpRequest = new(HttpMethod.Put, url)
+        {
+            Content = content
+        };
+
+        // attach bearer token
         httpClient.AttachBearerAuthentication(login.AccessToken!);
 
         // send the request

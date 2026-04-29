@@ -70,7 +70,7 @@ public class EndPoints
 {
     public required string Metadata { get; set; }
     public required string TokenExchange { get; set; }
-    public required string CreateUser { get; set; }
+    public required string CreateUpdateUser { get; set; }
     public required string LogoutUser { get; set; }
     public required string UserInfo { get; set; }
     public required string Introspect { get; set; }
