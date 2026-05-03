@@ -538,7 +538,7 @@ public class KeycloakRealmClient(HttpClient httpClient,
     public async Task<KeycloakSuccessStatusResult> ActivateUserAsync(KeycloakRealmActivateUserCommand command, CancellationToken cancellationToken)
     {
         // get user info
-        var user = (await GetUserAsync(new KeycloakRealmGetUserQuery(command.Email), cancellationToken))
+        KeycloakRealmGetUserResult? user = (await GetUserAsync(new KeycloakRealmGetUserQuery(command.Email), cancellationToken))
             .FirstOrDefault();
 
         // get keycloak admin token
