@@ -71,10 +71,9 @@ public static class KeycloackAuthenticationExtension
                     {
                         ClockSkew = TimeSpan.FromMinutes(1),
                         ValidateLifetime = true,
-                        ValidateAudience = false,
 
-                        //ValidateAudience = true,
-                        //ValidAudience = clientRealm.Client,
+                        ValidateAudience = true,
+                        ValidAudience = keycloakOptions.Audience,
 
                         ValidateIssuer = true,
                         ValidIssuer = validIssuer,

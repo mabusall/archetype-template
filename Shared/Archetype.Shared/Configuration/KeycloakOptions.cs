@@ -6,6 +6,7 @@ public class KeycloakOptions
 
     public required string AddressUri { get; set; }
     public required string HealthCheckAddressUri { get; set; }
+    public required string Audience { get; set; }
     public required EndPoints EndPoints { get; set; }
     public Dictionary<string, Realm> Realms { get; set; } = [];
 
@@ -76,5 +77,4 @@ public class EndPoints
     public required string Introspect { get; set; }
     public required string Keys { get; set; }
     public required string Issuer { get; set; }
-    public required string Audience { get; set; }
 }
