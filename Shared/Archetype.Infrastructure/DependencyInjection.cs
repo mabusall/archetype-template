@@ -152,9 +152,6 @@ public static class DependencyInjection
 
                     // Register the job with CancellationToken support
                     TaskManager.RegisterRecurringJob(jobKey, jobType, cron);
-
-                    if (job.AutoStart)
-                        RecurringJob.TriggerJob(jobKey);
                 }
             }
         }

@@ -2,5 +2,5 @@
 
 public interface IHangfireJob
 {
-    Task ExecuteAsync();
+    Task ExecuteAsync(CancellationToken cancellationToken);
 }

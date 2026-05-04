@@ -38,7 +38,7 @@ public static class TaskManager
 
         // Simple registration - Hangfire will inject CancellationToken automatically
         RecurringJob.AddOrUpdate<T>(jobId,
-                                    job => job.ExecuteAsync(),
+                                    job => job.ExecuteAsync(CancellationToken.None),
                                     cronExpression);
     }
 }

@@ -5,12 +5,12 @@ class CacheOrdersJob(ISampleDbUnitOfWork uow,
    : IHangfireJob
 {
     [DisableConcurrentExecution(timeoutInSeconds: 5 * 60)] // 5 minutes max
-    public async Task ExecuteAsync()
+    public async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         // Fetch all orders with cancellation support
         List<Order> allOrders = await uow
             .OrdersRepository
-            .GetListAsync(a => true, CancellationToken.None);
+            .GetListAsync(a => true, cancellationToken);
 
         // Serialize orders
         string allOrdersJson = allOrders.Serialize()!;
