@@ -6,6 +6,7 @@ public interface IAppSettingsKeyManagement
     AzurBlobServiceOptions AzurBlobServiceOptions { get; }
     CorsConfigurationOptions CorsConfigurationOptions { get; }
     HangfireOptions HangfireOptions { get; }
+    IntegrationApisOptions IntegrationApisOptions { get; }
     KeycloakOptions KeycloakOptions { get; }
     LoggingAndMonitoringOptions LoggingAndMonitoringOptions { get; }
     MobileNotificationOptions MobileNotificationOptions { get; }
@@ -19,6 +20,7 @@ public class AppSettingsKeyManagement(ApplicationOptions applicationOptions,
                                       AzurBlobServiceOptions azurBlobServiceOptions,
                                       CorsConfigurationOptions corsConfigurationOptions,
                                       HangfireOptions hangfireOptions,
+                                      IntegrationApisOptions? integrationApisOptions,
                                       KeycloakOptions keycloakOptions,
                                       LoggingAndMonitoringOptions loggingAndMonitoringOptions,
                                       MobileNotificationOptions mobileNotificationOptions,
@@ -35,6 +37,8 @@ public class AppSettingsKeyManagement(ApplicationOptions applicationOptions,
     public CorsConfigurationOptions CorsConfigurationOptions => corsConfigurationOptions;
 
     public HangfireOptions HangfireOptions => hangfireOptions;
+
+    public IntegrationApisOptions IntegrationApisOptions => integrationApisOptions!;
 
     public KeycloakOptions KeycloakOptions => keycloakOptions;
 

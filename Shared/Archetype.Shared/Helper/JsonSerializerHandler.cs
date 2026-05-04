@@ -43,20 +43,60 @@ public static class JsonSerializerHandler
             if (string.IsNullOrWhiteSpace(json) || string.IsNullOrWhiteSpace(propName))
                 return default;
 
-            if (typeof(TValue) == typeof(string))
-                return (TValue)(object)json;
+            if (typeof(TValue).Equals(typeof(string)))
+                return (TValue)Convert.ChangeType(json, typeof(TValue));
 
-            // Remove: "propName": "....",  (string value), optionally trailing comma
-            string pattern = $@"""{Regex.Escape(propName)}""\s*:\s*""(?:[^""\\]|\\.)*""\s*,?";
+            // Pre-processing: Fix malformed escape sequences in OMDB responses
 
-            string sanitized = Regex.Replace(json, pattern, "", RegexOptions.Singleline);
+            // Fix 1: Replace invalid \, with \\, (comma is not a valid escape character)
+            json = json.Replace(@"\,", @"\\,");
 
-            sanitized = sanitized.Replace(",,", ",")
-                                 .Replace(",}", "}")
-                                 .Replace("{,", "{")
-                                 .Replace(",]", "]");
+            // Fix 2: Fix properties ending with backslash followed by quote-comma
+            // Pattern: text\ "," -> text\" ","
+            json = Regex.Replace(json, @"(\\)("",)", "\\\"$2", RegexOptions.Singleline);
 
-            return JsonSerializer.Deserialize<TValue>(sanitized, options ?? _options);
+            // Use RegEx to find and remove the problematic property
+            // Pattern explanation:
+            // - "Plot"\s*:\s* - Match property name with colon and whitespace
+            // - "(?:[^"\\]|\\.)* - Match string value (handles escaped quotes)
+            // - "\s*,? - Match closing quote and optional comma
+            // Use RegexOptions.Singleline to match across line breaks
+            string pattern = $@",?\s*""{Regex.Escape(propName)}""\s*:\s*""(?:[^""\\]|\\.)*""\s*,?";
+
+            // Remove the property (and surrounding commas if present)
+            json = Regex.Replace(json, pattern, ",", RegexOptions.Singleline);
+
+            // If the property still exists (meaning it was too malformed for regex), use aggressive removal
+            string propCheck = $@"""{Regex.Escape(propName)}""\s*:";
+            if (Regex.IsMatch(json, propCheck))
+            {
+                Match propMatch = Regex.Match(json, propCheck);
+                if (propMatch.Success)
+                {
+                    int propStart = propMatch.Index;
+
+                    // Find the next valid property (pattern: ,"PropertyName":)
+                    int searchStart = propMatch.Index + propMatch.Length;
+                    string nextPropPattern = @",\s*""[A-Za-z]+""\s*:";
+                    Regex nextPropRegex = new(nextPropPattern);
+                    Match nextPropMatch = nextPropRegex.Match(json, searchStart);
+
+                    if (nextPropMatch.Success)
+                    {
+                        // Remove from the start of the problematic property to just before the comma of the next property
+                        int removeLength = nextPropMatch.Index - propStart;
+                        json = json.Remove(propStart, removeLength);
+                    }
+                }
+            }
+
+            // Clean up potential formatting issues left behind
+            json = json.Replace(",,", ",")
+                       .Replace(",}", "}")   // Remove trailing comma before closing brace
+                       .Replace("{,", "{")   // Remove leading comma after opening brace
+                       .Replace(",]", "]");  // Remove trailing comma before closing bracket
+
+            return JsonSerializer.Deserialize<TValue>(json, options ?? _options);
         }
     }
 }

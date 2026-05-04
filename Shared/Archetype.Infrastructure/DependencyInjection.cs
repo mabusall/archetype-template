@@ -1,4 +1,4 @@
-﻿namespace Archetype.Infrastructure;
+namespace Archetype.Infrastructure;
 
 public static class DependencyInjection
 {
@@ -239,6 +239,30 @@ public static class DependencyInjection
                 // Report API versions in response headers (X-Api-Version, api-supported-versions)
                 options.ReportApiVersions = true;
             });
+
+        return builder;
+    }
+
+    public static TBuilder AddInMemoryTokenRing<TBuilder>(this TBuilder builder, Action<TokenRingOptions> configureOptions)
+        where TBuilder : IHostApplicationBuilder
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(configureOptions);
+
+        TokenRingOptions options = new();
+        configureOptions(options);
+
+        if (string.IsNullOrWhiteSpace(options.CacheKey))
+            throw new ArgumentException("CacheKey is required for TokenRing.", nameof(configureOptions));
+
+        if (options.Tokens is null || options.Tokens.Count == 0)
+            throw new ArgumentException("At least one token must be provided for TokenRing.", nameof(configureOptions));
+
+        builder.Services.AddSingleton<ITokenRing>(sp =>
+        {
+            IDistributedCache distributedCache = sp.GetRequiredService<IDistributedCache>();
+            return new TokenRing(distributedCache, options.CacheKey, options.Tokens);
+        });
 
         return builder;
     }
@@ -1060,6 +1084,9 @@ public static class DependencyInjection
         HangfireOptions? hangfireOptions = configuration
             .GetSection(HangfireOptions.ConfigurationKey)
             .Get<HangfireOptions>();
+        IntegrationApisOptions? integrationApisOptions = configuration
+            .GetSection(IntegrationApisOptions.ConfigurationKey)
+            .Get<IntegrationApisOptions>();
         KeycloakOptions? keycloakOptions = configuration
             .GetSection(KeycloakOptions.ConfigurationKey)
             .Get<KeycloakOptions>();
@@ -1101,6 +1128,7 @@ public static class DependencyInjection
                                             azurBlobServiceOptions,
                                             corsConfigurationOptions,
                                             hangfireOptions,
+                                            integrationApisOptions,
                                             keycloakOptions,
                                             loggingAndMonitoringOptions,
                                             mobileNotificationOptions,
