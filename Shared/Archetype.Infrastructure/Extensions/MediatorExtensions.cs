@@ -1,4 +1,4 @@
-namespace Archetype.Infrastructure.Mediator;
+namespace Archetype.Infrastructure.Extensions;
 
 internal static class MediatorExtensions
 {
@@ -7,7 +7,7 @@ internal static class MediatorExtensions
         internal IServiceCollection AddArchetypeMediator(IReadOnlyCollection<Assembly> assemblies,
                                                                 Action<MediatorConfiguration> configure)
         {
-            services.AddScoped<IMediator, Mediator>();
+            services.AddScoped<IMediator, Mediator.Mediator>();
 
             foreach (Assembly assembly in assemblies)
             {

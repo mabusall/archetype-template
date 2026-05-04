@@ -1,7 +1,6 @@
 ﻿global using Archetype.Infrastructure;
 global using Archetype.Infrastructure.Authentications;
 global using Archetype.Infrastructure.Behaviors;
-global using Archetype.Infrastructure.Database;
 global using Archetype.Infrastructure.Extensions;
 global using Archetype.Infrastructure.Mediator;
 global using Archetype.Infrastructure.MessageBus;
