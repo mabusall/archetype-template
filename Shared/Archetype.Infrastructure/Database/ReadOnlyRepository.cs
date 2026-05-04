@@ -23,19 +23,22 @@ public class ReadOnlyRepository<TEntity, TBrief>(DbContext context)
     public async Task<PaginatedList<TBrief>> GetPaginatedListAsync(IQueryable<TEntity> query,
                                                                    int? pageNumber,
                                                                    int? pageSize,
+                                                                   string? sortBy,
                                                                    CancellationToken cancellationToken)
     {
         IQueryable<TEntity> tableEntity = query ?? _table.AsNoTracking();
-        int pageNumberCriteria = pageNumber is not null ? pageNumber.Value : 1;
-        int pageSizeCriteria = pageSize is not null ? pageSize.Value : 10;
+        int pageNumberCriteria = pageNumber ?? 1;
+        int pageSizeCriteria = pageSize ?? 10;
+        int count = await tableEntity.CountAsync(cancellationToken);
 
-        int count = await tableEntity
-            .TagWith("FORCE_LEGACY")
-            .CountAsync(cancellationToken);
+        sortBy = string.IsNullOrWhiteSpace(sortBy) ? "Id ASC" : sortBy;
 
+        // DB-side projection to TEntity
         List<TEntity> items = await tableEntity
+            .OrderBy(sortBy)
             .Skip((pageNumberCriteria - 1) * pageSizeCriteria)
             .Take(pageSizeCriteria)
+            .AsSplitQuery()
             .ToListAsync(cancellationToken);
 
         return new PaginatedList<TBrief>(items.Adapt<List<TBrief>>(),

@@ -32,6 +32,7 @@ public interface IReadOnlyRepository<TEntity, TBrief>
     Task<PaginatedList<TBrief>> GetPaginatedListAsync(IQueryable<TEntity> query,
                                                       int? pageNumber,
                                                       int? pageSize,
+                                                      string? sortBy,
                                                       CancellationToken cancellationToken);
 
     /// <summary>

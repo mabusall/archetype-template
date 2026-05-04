@@ -49,17 +49,15 @@ public class GenericRepository<TEntity, TKey, TBrief>(DbContext context)
 
         sortBy = string.IsNullOrWhiteSpace(sortBy) ? "Id ASC" : sortBy;
 
-
-        // DB-side projection to TBrief
-        List<TBrief> items = await tableEntity
+        // DB-side projection to TEntity
+        List<TEntity> items = await tableEntity
             .OrderBy(sortBy)
             .Skip((pageNumberCriteria - 1) * pageSizeCriteria)
             .Take(pageSizeCriteria)
             .AsSplitQuery()
-            .ProjectToType<TBrief>()
             .ToListAsync(cancellationToken);
 
-        return new PaginatedList<TBrief>(items,
+        return new PaginatedList<TBrief>(items.Adapt<List<TBrief>>(),
                                          count,
                                          pageNumberCriteria,
                                          pageSizeCriteria);
