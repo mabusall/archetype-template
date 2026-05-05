@@ -4,7 +4,21 @@ public static class DependencyInjection
 {
     private const string ReadyTag = "ready";
 
-    public static TBuilder AddInfrastructureServices<TBuilder>(this TBuilder builder)
+    /// <summary>
+    /// Configures default services and settings required for API applications, including configuration, data
+    /// protection, environment variables, response compression, and API versioning. This method should be called at the
+    /// start of application setup before adding controllers or endpoints.
+    /// </summary>
+    /// <remarks>This method centralizes the setup of common API infrastructure, such as OpenAPI, response
+    /// compression for common MIME types, and API versioning with default settings. It also loads application secrets
+    /// and environment variables needed for secure operation. Call this method before registering controllers or
+    /// minimal API endpoints to ensure all defaults are applied.</remarks>
+    /// <typeparam name="TBuilder">The type of the application builder used to configure services and settings. Must implement
+    /// IHostApplicationBuilder.</typeparam>
+    /// <param name="builder">The application builder instance used to configure API services and defaults.</param>
+    /// <returns>The same application builder instance, enabling further configuration chaining.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the required application configuration section is missing.</exception>
+    public static TBuilder AddApiServiceDefaults<TBuilder>(this TBuilder builder)
         where TBuilder : IHostApplicationBuilder
     {
         ApplicationOptions applicationOptions = builder
@@ -20,6 +34,100 @@ public static class DependencyInjection
         DataProtectionProviderExtention.Initialize(applicationOptions.PublicKey,
                                                    applicationOptions.PrivateKey);
 
+        // Add environment variables with specific prefix
+        // Add HashiCorp Vault configuration source
+        builder
+            .Configuration
+            .AddEnvironmentVariables("ArchetypeKeys:")
+            .AddHashiCorpVaultAsync(VaultSettingOptions.ConfigurationKey)
+            .ConfigureAwait(false)
+            .GetAwaiter()
+            .GetResult();
+
+        // Configure API Versioning
+        builder
+            .Services
+            // Add services to the container.
+            .AddOpenApi()
+
+            .AddResponseCompression(options =>
+            {
+                // Enable compression for HTTPS (secure connections)
+                options.EnableForHttps = true;
+
+                // Add Gzip compression (widely supported)
+                options.Providers.Add<GzipCompressionProvider>();
+
+                // Add Brotli compression (better compression, modern browsers)
+                options.Providers.Add<BrotliCompressionProvider>();
+
+                // Compress these MIME types
+                options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                [
+                    MediaTypeNames.Application.Json,
+                    MediaTypeNames.Application.Xml,
+                    MediaTypeNames.Text.Plain,
+                    MediaTypeNames.Text.Html
+                ]);
+            })
+
+            // Configure compression levels for better performance
+            .Configure<BrotliCompressionProviderOptions>(options =>
+            {
+                options.Level = CompressionLevel.Fastest; // Balance between speed and size
+            })
+
+            .Configure<GzipCompressionProviderOptions>(options =>
+            {
+                options.Level = CompressionLevel.Fastest; // Balance between speed and size
+            })
+
+            // Add API versioning to support multiple versions of your API simultaneously
+            .AddApiVersioning(options =>
+            {
+                // Default version if not specified
+                options.DefaultApiVersion = new Asp.Versioning.ApiVersion(1, 0);
+
+                // Assume v1.0 if client doesn't specify version
+                options.AssumeDefaultVersionWhenUnspecified = true;
+
+                // Read version from URL segment (e.g., /v1/order, /v2/order)
+                options.ApiVersionReader = new Asp.Versioning.UrlSegmentApiVersionReader();
+
+                // Report API versions in response headers (X-Api-Version, api-supported-versions)
+                options.ReportApiVersions = true;
+            });
+
+        return builder;
+    }
+
+    public static TBuilder AddInMemoryTokenRing<TBuilder>(this TBuilder builder, Action<TokenRingOptions> configureOptions)
+    where TBuilder : IHostApplicationBuilder
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(configureOptions);
+
+        TokenRingOptions options = new();
+        configureOptions(options);
+
+        if (string.IsNullOrWhiteSpace(options.CacheKey))
+            throw new ArgumentException("CacheKey is required for TokenRing.", nameof(configureOptions));
+
+        if (options.Tokens is null || options.Tokens.Count == 0)
+            throw new ArgumentException("At least one token must be provided for TokenRing.", nameof(configureOptions));
+
+        builder.Services.AddSingleton<ITokenRing>(sp =>
+        {
+            IDistributedCache distributedCache = sp.GetRequiredService<IDistributedCache>();
+            return new TokenRing(distributedCache, options.CacheKey, options.Tokens);
+        });
+
+        return builder;
+    }
+
+    public static TBuilder AddInfrastructureServices<TBuilder>(this TBuilder builder)
+        where TBuilder : IHostApplicationBuilder
+    {
         // Configure logging FIRST (before anything else)
         builder.ConfigureLogging();
 
@@ -171,100 +279,6 @@ public static class DependencyInjection
         });
 
         return app;
-    }
-
-    public static TBuilder AddApiServiceDefaults<TBuilder>(this TBuilder builder)
-        where TBuilder : IHostApplicationBuilder
-    {
-        // Add environment variables with specific prefix
-        // Add HashiCorp Vault configuration source
-        builder
-            .Configuration
-            .AddEnvironmentVariables("ArchetypeKeys:")
-            .AddHashiCorpVaultAsync(VaultSettingOptions.ConfigurationKey)
-            .ConfigureAwait(false)
-            .GetAwaiter()
-            .GetResult();
-
-        // Configure API Versioning
-        builder
-            .Services
-            // Add services to the container.
-            .AddOpenApi()
-
-            .AddResponseCompression(options =>
-            {
-                // Enable compression for HTTPS (secure connections)
-                options.EnableForHttps = true;
-
-                // Add Gzip compression (widely supported)
-                options.Providers.Add<GzipCompressionProvider>();
-
-                // Add Brotli compression (better compression, modern browsers)
-                options.Providers.Add<BrotliCompressionProvider>();
-
-                // Compress these MIME types
-                options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
-                [
-                    MediaTypeNames.Application.Json,
-                    MediaTypeNames.Application.Xml,
-                    MediaTypeNames.Text.Plain,
-                    MediaTypeNames.Text.Html
-                ]);
-            })
-
-            // Configure compression levels for better performance
-            .Configure<BrotliCompressionProviderOptions>(options =>
-            {
-                options.Level = CompressionLevel.Fastest; // Balance between speed and size
-            })
-
-            .Configure<GzipCompressionProviderOptions>(options =>
-            {
-                options.Level = CompressionLevel.Fastest; // Balance between speed and size
-            })
-
-            // Add API versioning to support multiple versions of your API simultaneously
-            .AddApiVersioning(options =>
-            {
-                // Default version if not specified
-                options.DefaultApiVersion = new Asp.Versioning.ApiVersion(1, 0);
-
-                // Assume v1.0 if client doesn't specify version
-                options.AssumeDefaultVersionWhenUnspecified = true;
-
-                // Read version from URL segment (e.g., /v1/order, /v2/order)
-                options.ApiVersionReader = new Asp.Versioning.UrlSegmentApiVersionReader();
-
-                // Report API versions in response headers (X-Api-Version, api-supported-versions)
-                options.ReportApiVersions = true;
-            });
-
-        return builder;
-    }
-
-    public static TBuilder AddInMemoryTokenRing<TBuilder>(this TBuilder builder, Action<TokenRingOptions> configureOptions)
-        where TBuilder : IHostApplicationBuilder
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-        ArgumentNullException.ThrowIfNull(configureOptions);
-
-        TokenRingOptions options = new();
-        configureOptions(options);
-
-        if (string.IsNullOrWhiteSpace(options.CacheKey))
-            throw new ArgumentException("CacheKey is required for TokenRing.", nameof(configureOptions));
-
-        if (options.Tokens is null || options.Tokens.Count == 0)
-            throw new ArgumentException("At least one token must be provided for TokenRing.", nameof(configureOptions));
-
-        builder.Services.AddSingleton<ITokenRing>(sp =>
-        {
-            IDistributedCache distributedCache = sp.GetRequiredService<IDistributedCache>();
-            return new TokenRing(distributedCache, options.CacheKey, options.Tokens);
-        });
-
-        return builder;
     }
 
     #region [ private methods ]
