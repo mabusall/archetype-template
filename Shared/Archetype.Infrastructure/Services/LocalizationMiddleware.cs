@@ -12,8 +12,12 @@ public class LocalizationMiddleware(RequestDelegate next)
             .Select(lang => lang.Split(';')[0])  // Take the part before the semicolon (if any)
             .FirstOrDefault();
 
+        // If the header is present but only contains "*", treat it as no specific language preference
+        if (acceptLanguage.Length == 1 && acceptLanguage.Equals("*"))
+            language = "en";
+
         if (string.IsNullOrEmpty(language))
-            language = "ar"; // Fallback to default language if not provided
+            language = "en"; // Fallback to default language if not provided
 
         if (language.Contains('-'))
             language = language.Split('-')[0]; // Use only the primary language subtag

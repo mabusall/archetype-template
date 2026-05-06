@@ -102,6 +102,11 @@ public static class DependencyInjection
 
                 // Report API versions in response headers (X-Api-Version, api-supported-versions)
                 options.ReportApiVersions = true;
+            })
+            .AddApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
             });
 
         return builder;
