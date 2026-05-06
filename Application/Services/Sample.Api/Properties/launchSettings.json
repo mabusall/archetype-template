@@ -17,7 +17,8 @@
       "applicationUrl": "https://localhost:60503",
       "launchUrl": "scalar/v1",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ArchetypeVaultKey:VaultToken": "<vault token here>"
       }
     }
   }

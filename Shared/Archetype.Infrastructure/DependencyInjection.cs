@@ -21,6 +21,22 @@ public static class DependencyInjection
     public static TBuilder AddApiServiceDefaults<TBuilder>(this TBuilder builder)
         where TBuilder : IHostApplicationBuilder
     {
+        VaultSettingOptions vaultSettingOptions = builder
+            .Configuration
+            .GetSection(VaultSettingOptions.ConfigurationKey)
+            .Get<VaultSettingOptions>()
+            ?? throw new InvalidOperationException($"Missing configuration section '{VaultSettingOptions.ConfigurationKey}'.");
+
+        // Add environment variables with specific prefix
+        // Add HashiCorp Vault configuration source
+        builder
+            .Configuration
+            .AddEnvironmentVariables($"{vaultSettingOptions.EnvironmentVarName}:")
+            .AddHashiCorpVaultAsync(VaultSettingOptions.ConfigurationKey)
+            .ConfigureAwait(false)
+            .GetAwaiter()
+            .GetResult();
+
         ApplicationOptions applicationOptions = builder
             .Configuration
             .GetSection(ApplicationOptions.ConfigurationKey)
@@ -33,16 +49,6 @@ public static class DependencyInjection
         // load required keys in order to use it throwgh all application life cycle
         DataProtectionProviderExtention.Initialize(applicationOptions.PublicKey,
                                                    applicationOptions.PrivateKey);
-
-        // Add environment variables with specific prefix
-        // Add HashiCorp Vault configuration source
-        builder
-            .Configuration
-            .AddEnvironmentVariables("ArchetypeKeys:")
-            .AddHashiCorpVaultAsync(VaultSettingOptions.ConfigurationKey)
-            .ConfigureAwait(false)
-            .GetAwaiter()
-            .GetResult();
 
         // Configure API Versioning
         builder

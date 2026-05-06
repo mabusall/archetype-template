@@ -8,10 +8,15 @@ public sealed class VaultSettingOptions
     public bool IsEnabled { get; init; }
 
     /// <summary>Vault base URL, e.g. "http://localhost:8200".</summary>
-    public required string AddressUri { get; init; } = default!;
+    public required string AddressUri { get; init; }
 
     /// <summary>KV mount point name. For your dev setup it's "secret".</summary>
-    public required string MountPoint { get; init; } = "secret";
+    public required string MountPoint { get; init; }
+
+    /// <summary>
+    /// Gets the name of the environment variable used for configuration or lookup.
+    /// </summary>
+    public required string EnvironmentVarName { get; init; }
 
     /// <summary>
     /// List of KV paths to load and merge into configuration,
