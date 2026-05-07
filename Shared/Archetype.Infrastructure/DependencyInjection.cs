@@ -50,11 +50,11 @@ public static class DependencyInjection
         DataProtectionProviderExtention.Initialize(applicationOptions.PublicKey,
                                                    applicationOptions.PrivateKey);
 
-        // Configure API Versioning
+        // Register OpenAPI with versioning and custom schema transformations
+        builder.AddOpenApiSchema();
+
         builder
             .Services
-            // Add services to the container.
-            .AddOpenApi()
 
             .AddResponseCompression(options =>
             {
@@ -86,34 +86,13 @@ public static class DependencyInjection
             .Configure<GzipCompressionProviderOptions>(options =>
             {
                 options.Level = CompressionLevel.Fastest; // Balance between speed and size
-            })
-
-            // Add API versioning to support multiple versions of your API simultaneously
-            .AddApiVersioning(options =>
-            {
-                // Default version if not specified
-                options.DefaultApiVersion = new Asp.Versioning.ApiVersion(1, 0);
-
-                // Assume v1.0 if client doesn't specify version
-                options.AssumeDefaultVersionWhenUnspecified = true;
-
-                // Read version from URL segment (e.g., /v1/order, /v2/order)
-                options.ApiVersionReader = new Asp.Versioning.UrlSegmentApiVersionReader();
-
-                // Report API versions in response headers (X-Api-Version, api-supported-versions)
-                options.ReportApiVersions = true;
-            })
-            .AddApiExplorer(options =>
-            {
-                options.GroupNameFormat = "'v'VVV";
-                options.SubstituteApiVersionInUrl = true;
             });
 
         return builder;
     }
 
     public static TBuilder AddInMemoryTokenRing<TBuilder>(this TBuilder builder, Action<TokenRingOptions> configureOptions)
-    where TBuilder : IHostApplicationBuilder
+        where TBuilder : IHostApplicationBuilder
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(configureOptions);
@@ -271,6 +250,9 @@ public static class DependencyInjection
 
                     // Register the job with CancellationToken support
                     TaskManager.RegisterRecurringJob(jobKey, jobType, cron);
+
+                    if (job.AutoStart)
+                        RecurringJob.TriggerJob(jobKey);
                 }
             }
         }
@@ -293,6 +275,161 @@ public static class DependencyInjection
     }
 
     #region [ private methods ]
+
+    private static TBuilder AddOpenApiSchema<TBuilder>(this TBuilder builder)
+        where TBuilder : IHostApplicationBuilder
+    {
+        // AddApiVersioning + AddApiExplorer must be registered BEFORE AddOpenApi
+        // so the versioning metadata is available when the OpenAPI document is generated.
+        builder
+            .Services
+            .AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = new Asp.Versioning.ApiVersion(1, 0);
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ApiVersionReader = new Asp.Versioning.UrlSegmentApiVersionReader();
+                options.ReportApiVersions = true;
+            })
+            .AddApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
+            });
+
+        // AddOpenApi requires IServiceCollection — start a separate chain after versioning
+        builder
+            .Services
+            .AddOpenApi(options =>
+             {
+                 options.AddSchemaTransformer((schema, context, cancellationToken) =>
+                 {
+                     // 1. ENUM HANDLING — integer-backed enums only
+                     // Skip string-backed enums (e.g. ContentStatus with "Released", "Ended")
+                     // Only process enums whose underlying type is a numeric type
+                     if (context.JsonTypeInfo.Type.IsEnum)
+                     {
+                         Type enumType = context.JsonTypeInfo.Type;
+                         Type underlyingType = Enum.GetUnderlyingType(enumType);
+
+                         if (underlyingType == typeof(byte) || underlyingType == typeof(short)
+                             || underlyingType == typeof(int) || underlyingType == typeof(long))
+                         {
+                             string[] enumNames = Enum.GetNames(enumType);
+                             IEnumerable<object> enumValues = Enum.GetValues(enumType)
+                                                 .Cast<object>()
+                                                 .Select(e => Convert.ChangeType(e, underlyingType));
+
+                             schema.Type = JsonSchemaType.Integer;
+                             schema.Enum = [.. enumValues.Select(v => JsonValue.Create(Convert.ToInt32(v)) as JsonNode)];
+
+                             JsonArray namesArray = [.. enumNames.Select(n => JsonValue.Create(n) as JsonNode).ToArray()];
+                             schema.Extensions ??= new Dictionary<string, IOpenApiExtension>();
+                             schema.Extensions["x-enumNames"] = new JsonNodeExtension(namesArray);
+                             schema.Description = string.Join("\n", enumNames.Zip(enumValues, (name, value) => $"{name} = {value}"));
+                         }
+                     }
+
+                     // 2. STRIP PATTERNS
+                     if (schema.Pattern is not null)
+                         schema.Pattern = null;
+
+                     // 3. COLLAPSE FLAGS-BASED TYPE UNIONS → SIMPLE SCALARS
+                     // JsonSchemaType is [Flags]. .NET 10 emits int/long as Integer|String,
+                     // double as Number|String. Strip String and Null flags.
+                     if (schema.Type.HasValue)
+                     {
+                         JsonSchemaType t = schema.Type.Value;
+                         bool hasNumeric = t.HasFlag(JsonSchemaType.Integer) || t.HasFlag(JsonSchemaType.Number);
+
+                         if (hasNumeric && t.HasFlag(JsonSchemaType.String))
+                             t &= ~JsonSchemaType.String;
+
+                         if (t.HasFlag(JsonSchemaType.Null))
+                             t &= ~JsonSchemaType.Null;
+
+                         schema.Type = t;
+
+                         if (schema.Format == "int64")
+                             schema.Format = "int32";
+                     }
+
+                     // 4. COLLAPSE anyOf([numeric, string]) → scalar
+                     if (schema.AnyOf is { Count: > 0 })
+                     {
+                         bool anyOfHasNumeric = schema.AnyOf.OfType<OpenApiSchema>()
+                             .Any(s => s.Type == JsonSchemaType.Integer || s.Type == JsonSchemaType.Number);
+                         bool anyOfHasString = schema.AnyOf.OfType<OpenApiSchema>()
+                             .Any(s => s.Type == JsonSchemaType.String);
+                         bool anyOfHasInteger = schema.AnyOf.OfType<OpenApiSchema>()
+                             .Any(s => s.Type == JsonSchemaType.Integer);
+
+                         if (anyOfHasNumeric && anyOfHasString)
+                         {
+                             schema.AnyOf = null;
+                             schema.Type = anyOfHasInteger ? JsonSchemaType.Integer : JsonSchemaType.Number;
+                             schema.Format = anyOfHasInteger ? "int32" : null;
+                             schema.Pattern = null;
+                         }
+                     }
+
+                     return Task.CompletedTask;
+                 });
+
+                 // DOCUMENT TRANSFORMER:
+                 // Collapse oneOf/anyOf([$ref, null]) → plain $ref on all DTO properties.
+                 // .NET 10 emits nullable objects/enums as:
+                 //   "status": { "oneOf": [{ "type": "null" }, { "$ref": "ContentStatus" }] }
+                 // Orval wraps this in ContentDtoStatus = null | ContentStatus.
+                 // We replace the whole property value with a direct OpenApiSchemaReference.
+                 options.AddDocumentTransformer((document, context, cancellationToken) =>
+                 {
+                     if (document.Components?.Schemas is null)
+                         return Task.CompletedTask;
+
+                     foreach (OpenApiSchema componentSchema in document.Components.Schemas.Values.OfType<OpenApiSchema>())
+                         CollapseNullableRefs(componentSchema, document);
+
+                     return Task.CompletedTask;
+
+                     static void CollapseNullableRefs(OpenApiSchema schema, OpenApiDocument doc)
+                     {
+                         if (schema.Properties is null) return;
+
+                         List<string> keysToUpdate = [];
+                         foreach (KeyValuePair<string, IOpenApiSchema> kv in schema.Properties)
+                         {
+                             if (kv.Value is not OpenApiSchema propSchema) continue;
+
+                             // Handle both oneOf and anyOf patterns
+                             IList<IOpenApiSchema>? candidates = propSchema.OneOf?.Count == 2 ? propSchema.OneOf
+                                            : propSchema.AnyOf?.Count == 2 ? propSchema.AnyOf
+                                            : null;
+
+                             if (candidates is null) continue;
+
+                             bool hasRef = candidates.OfType<OpenApiSchemaReference>().Any();
+                             bool hasNull = candidates.OfType<OpenApiSchema>().Any(s => s.Type == JsonSchemaType.Null);
+
+                             if (hasRef && hasNull)
+                                 keysToUpdate.Add(kv.Key);
+                         }
+
+                         foreach (string key in keysToUpdate)
+                         {
+                             if (schema.Properties[key] is not OpenApiSchema propSchema) continue;
+
+                             IList<IOpenApiSchema> candidates = propSchema.OneOf?.Count == 2 ? propSchema.OneOf : propSchema.AnyOf!;
+                             OpenApiSchemaReference refEntry = candidates.OfType<OpenApiSchemaReference>().First();
+
+                             schema.Properties[key] = new OpenApiSchemaReference(refEntry.Reference!.Id!, doc);
+                         }
+                     }
+                 });
+             });
+
+
+        return builder;
+    }
 
     private static TBuilder ConfigureServiceDefaults<TBuilder>(this TBuilder builder)
         where TBuilder : IHostApplicationBuilder
@@ -351,6 +488,7 @@ public static class DependencyInjection
             .Configure<JsonOptions>(options =>
             {
                 options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
             })
 
             .Configure<RouteOptions>(options =>
