@@ -241,11 +241,13 @@ public static class DependencyInjection
             foreach (HangfireJob? job in hangfireOptions.Tasks.Select(s => s.Value))
             {
                 // Register each Hangfire job dynamically based on configuration
+                string jobKey = job.Handler.ToEndpointName(hangfireOptions.Prefix);
+
+                // Register each Hangfire job dynamically based on configuration
                 if (job.IsEnabled)
                 {
                     Type jobType = Type.GetType(job.Handler)
                         ?? throw new InvalidOperationException($"Unable to resolve job type '{job.Handler}'.");
-                    string jobKey = job.Handler.ToEndpointName(hangfireOptions.Prefix);
                     string cron = job.Schedule.ToCronExpression();
 
                     // Register the job with CancellationToken support
