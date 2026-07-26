@@ -21,7 +21,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Modules\Sample.Core.Api\Sample.Core.Api.csproj" />
+	  <ProjectReference Include="..\..\Modules\Sample.Core.Api\Sample.Core.Api.csproj" />
 	</ItemGroup>
 
 </Project>

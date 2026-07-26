@@ -38,7 +38,7 @@ public class PushMobileNotificationConsumer : IConsumer<PushMobileNotificationEv
                 Priority = Priority.High,
             },
             Data = data,
-            Tokens = [.. @event.DeviceTokens!]
+            Fids = [.. @event.DeviceTokens!]
         };
 
         await firebaseMessaging.SendEachForMulticastAsync(firebaseMulticastMessage);
