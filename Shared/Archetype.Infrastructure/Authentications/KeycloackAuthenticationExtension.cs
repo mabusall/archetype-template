@@ -9,9 +9,7 @@ public static class KeycloackAuthenticationExtension
         {
             KeycloakOptions? keycloakOptions = builder.Configuration
                 .GetSection(KeycloakOptions.ConfigurationKey)
-                .Get<KeycloakOptions>();
-
-            if (keycloakOptions is null)
+                .Get<KeycloakOptions>() ??
                 throw new InvalidOperationException($"Missing configuration section '{KeycloakOptions.ConfigurationKey}'.");
 
             if (keycloakOptions.EndPoints is null)
@@ -22,13 +20,13 @@ public static class KeycloackAuthenticationExtension
                 throw new InvalidOperationException("Keycloak AddressUri is missing or empty.");
 
             Realm customRealm = keycloakOptions.GetCustomRealm();
-            RealmClient customClient = keycloakOptions.GetCustomClient("ArchetypeCli");
+            RealmClient customClient = keycloakOptions.GetCustomClient("FlixHubCli");
 
             if (string.IsNullOrWhiteSpace(customRealm.Name))
                 throw new InvalidOperationException("Keycloak Custom Realm Name is missing or empty.");
 
             if (string.IsNullOrWhiteSpace(customClient.ClientId))
-                throw new InvalidOperationException("Keycloak Custom ArchetypeCli Client ClientId is missing or empty.");
+                throw new InvalidOperationException("Keycloak Custom FlixHubCli Client ClientId is missing or empty.");
 
             // Build metadata address using your existing template:
             // "Metadata": "/realms/{0}/.well-known/openid-configuration"
@@ -71,6 +69,7 @@ public static class KeycloackAuthenticationExtension
                     {
                         ClockSkew = TimeSpan.FromMinutes(1),
                         ValidateLifetime = true,
+                        //ValidateAudience = false,
 
                         ValidateAudience = true,
                         ValidAudience = keycloakOptions.Audience,

@@ -16,32 +16,33 @@
 		<PackageReference Include="AspNetCore.HealthChecks.System" Version="9.0.0" />
 		<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
 		<PackageReference Include="AspNetCore.HealthChecks.Uris" Version="9.0.0" />
-		<PackageReference Include="Elastic.Apm.NetCoreAll" Version="1.34.3" />
+		<PackageReference Include="Elastic.Apm.NetCoreAll" Version="1.34.5" />
 		<PackageReference Include="Elastic.Serilog.Sinks" Version="9.0.0" />
 		<PackageReference Include="EntityFrameworkCore.Exceptions.PostgreSQL" Version="10.0.1" />
 		<PackageReference Include="EntityFrameworkCore.Exceptions.SqlServer" Version="10.0.1" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
-		<PackageReference Include="Hangfire" Version="1.8.23" />
-		<PackageReference Include="Hangfire.Core" Version="1.8.23" />
+		<PackageReference Include="Hangfire" Version="1.8.24" />
+		<PackageReference Include="Hangfire.Core" Version="1.8.24" />
 		<PackageReference Include="Hangfire.PostgreSql" Version="1.21.1" />
-		<PackageReference Include="Mapster" Version="10.0.8" />
+		<PackageReference Include="Mapster" Version="10.0.11" />
 		<PackageReference Include="MassTransit.EntityFrameworkCore" Version="9.1.2" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.9" />
-		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
-		<PackageReference Include="Microsoft.AspNetCore.OutputCaching.StackExchangeRedis" Version="10.0.9" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.9" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.9" />
-		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.9" />
-		<PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.7.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
+		<PackageReference Include="Microsoft.OpenApi" Version="2.9.0" />
+		<PackageReference Include="Microsoft.AspNetCore.OutputCaching.StackExchangeRedis" Version="10.0.10" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.10" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.10" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.8.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.2" />
-		<PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.16.0" />
-		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.16.0" />
-		<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.2" />
-		<PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.15.1" />
-		<PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.15.1" />
-		<PackageReference Include="OpenTelemetry.Instrumentation.SqlClient" Version="1.15.2" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+		<PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.17.0" />
+		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.17.0" />
+		<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.17.0" />
+		<PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.17.0" />
+		<PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.17.0" />
+		<PackageReference Include="OpenTelemetry.Instrumentation.SqlClient" Version="1.17.0" />
 		<PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
 		<PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
 		<PackageReference Include="Serilog.Enrichers.Sensitive" Version="2.1.0" />
@@ -49,12 +50,12 @@
 		<PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1" />
 		<PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-		<PackageReference Include="SharpCompress" Version="0.49.1" />
+		<PackageReference Include="SharpCompress" Version="0.50.1" />
 		<PackageReference Include="Snappier" Version="1.3.1" />
 		<PackageReference Include="VaultSharp" Version="1.17.5.1" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Archetype.Shared\Archetype.Shared.csproj" />
+		<ProjectReference Include="..\Archetype.Shared\Archetype.Shared.csproj" />
 	</ItemGroup>
 </Project>

@@ -33,10 +33,7 @@ public class BusService(IBus bus,
             }
             catch (Exception ex)
             {
-                if (logger.IsEnabled(LogLevel.Error))
-                {
-                    logger.LogError(ex, "Error while publishing outbox event {Event}", @event);
-                }
+                logger.LogError(ex, "Error while publishing outbox event {Event}", @event);
                 throw new PublishOutboxException();
             }
         }

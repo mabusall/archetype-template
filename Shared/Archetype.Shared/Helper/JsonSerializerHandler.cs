@@ -36,67 +36,47 @@ public static class JsonSerializerHandler
         }
 
         /// <summary>
-        /// Deserialize JSON with sanitization that removes the malformed property.
+        /// Parses the JSON, rebuilds it while excluding the specified properties,
+        /// then deserializes the clean result. No regex. No string mutation.
         /// </summary>
-        public TValue? DeserializeWithSanitization<TValue>(string propName, JsonSerializerOptions? options = null)
+        public TValue? DeserializeExcluding<TValue>(JsonSerializerOptions? options = null,
+                                                    params ReadOnlySpan<string> excludedProperties)
         {
-            if (string.IsNullOrWhiteSpace(json) || string.IsNullOrWhiteSpace(propName))
-                return default;
+            if (string.IsNullOrWhiteSpace(json)) return default;
 
-            if (typeof(TValue).Equals(typeof(string)))
-                return (TValue)Convert.ChangeType(json, typeof(TValue));
+            if (typeof(TValue) == typeof(string))
+                return (TValue)(object)json;
 
-            // Pre-processing: Fix malformed escape sequences in OMDB responses
+            if (excludedProperties.IsEmpty)
+                return JsonSerializer.Deserialize<TValue>(json, options ?? _options);
 
-            // Fix 1: Replace invalid \, with \\, (comma is not a valid escape character)
-            json = json.Replace(@"\,", @"\\,");
+            using JsonDocument document = JsonDocument.Parse(json);
+            using MemoryStream stream = new();
+            using Utf8JsonWriter writer = new(stream);
 
-            // Fix 2: Fix properties ending with backslash followed by quote-comma
-            // Pattern: text\ "," -> text\" ","
-            json = Regex.Replace(json, @"(\\)("",)", "\\\"$2", RegexOptions.Singleline);
+            writer.WriteStartObject();
 
-            // Use RegEx to find and remove the problematic property
-            // Pattern explanation:
-            // - "Plot"\s*:\s* - Match property name with colon and whitespace
-            // - "(?:[^"\\]|\\.)* - Match string value (handles escaped quotes)
-            // - "\s*,? - Match closing quote and optional comma
-            // Use RegexOptions.Singleline to match across line breaks
-            string pattern = $@",?\s*""{Regex.Escape(propName)}""\s*:\s*""(?:[^""\\]|\\.)*""\s*,?";
-
-            // Remove the property (and surrounding commas if present)
-            json = Regex.Replace(json, pattern, ",", RegexOptions.Singleline);
-
-            // If the property still exists (meaning it was too malformed for regex), use aggressive removal
-            string propCheck = $@"""{Regex.Escape(propName)}""\s*:";
-            if (Regex.IsMatch(json, propCheck))
+            foreach (JsonProperty property in document.RootElement.EnumerateObject())
             {
-                Match propMatch = Regex.Match(json, propCheck);
-                if (propMatch.Success)
+                bool shouldSkip = false;
+                foreach (string excluded in excludedProperties)
                 {
-                    int propStart = propMatch.Index;
-
-                    // Find the next valid property (pattern: ,"PropertyName":)
-                    int searchStart = propMatch.Index + propMatch.Length;
-                    string nextPropPattern = @",\s*""[A-Za-z]+""\s*:";
-                    Regex nextPropRegex = new(nextPropPattern);
-                    Match nextPropMatch = nextPropRegex.Match(json, searchStart);
-
-                    if (nextPropMatch.Success)
+                    if (property.Name.Equals(excluded, StringComparison.OrdinalIgnoreCase))
                     {
-                        // Remove from the start of the problematic property to just before the comma of the next property
-                        int removeLength = nextPropMatch.Index - propStart;
-                        json = json.Remove(propStart, removeLength);
+                        shouldSkip = true;
+                        break;
                     }
                 }
+
+                if (!shouldSkip)
+                    property.WriteTo(writer);
             }
 
-            // Clean up potential formatting issues left behind
-            json = json.Replace(",,", ",")
-                       .Replace(",}", "}")   // Remove trailing comma before closing brace
-                       .Replace("{,", "{")   // Remove leading comma after opening brace
-                       .Replace(",]", "]");  // Remove trailing comma before closing bracket
+            writer.WriteEndObject();
+            writer.Flush();
 
-            return JsonSerializer.Deserialize<TValue>(json, options ?? _options);
+            stream.Position = 0;
+            return JsonSerializer.Deserialize<TValue>(stream, options ?? _options);
         }
     }
 }

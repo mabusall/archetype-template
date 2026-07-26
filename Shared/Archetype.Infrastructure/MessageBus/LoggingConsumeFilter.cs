@@ -52,16 +52,14 @@ public class LoggingConsumeFilter<T>(ILogger<LoggingConsumeFilter<T>> logger) : 
 
         if (logger.IsEnabled(LogLevel.Information))
         {
-            logger.LogInformation(
-                "[START] Consuming {MessageType} from {ConsumerId}",
-                messageType,
-                consumerId);
+            logger.LogInformation("[START] Consuming {MessageType} from {ConsumerId}",
+                                  messageType,
+                                  consumerId);
 
-            logger.LogInformation(
-                "Message Context: ConversationId={ConversationId}, MessageId={MessageId}, Message={@Message}",
-                context.ConversationId,
-                context.MessageId,
-                context.Message);
+            logger.LogInformation("Message Context: ConversationId={ConversationId}, MessageId={MessageId}, Message={@Message}",
+                                  context.ConversationId,
+                                  context.MessageId,
+                                  context.Message);
         }
 
         Stopwatch sw = Stopwatch.StartNew();
@@ -87,10 +85,9 @@ public class LoggingConsumeFilter<T>(ILogger<LoggingConsumeFilter<T>> logger) : 
 
             if (logger.IsEnabled(LogLevel.Information))
             {
-                logger.LogInformation(
-                    "[END] {MessageType} consumed successfully in {ElapsedSeconds:F2}s",
-                    messageType,
-                    elapsedSeconds);
+                logger.LogInformation("[END] {MessageType} consumed successfully in {ElapsedSeconds:F2}s",
+                                      messageType,
+                                      elapsedSeconds);
             }
         }
         catch (Exception ex)
@@ -104,10 +101,10 @@ public class LoggingConsumeFilter<T>(ILogger<LoggingConsumeFilter<T>> logger) : 
             }
 
             logger.LogError(ex,
-                "[ERROR] Failed to consume {MessageType} after {ElapsedSeconds:F2}s. Exception: {ExceptionMessage}",
-                messageType,
-                sw.Elapsed.TotalSeconds,
-                ex.Message);
+                            "[ERROR] Failed to consume {MessageType} after {ElapsedSeconds:F2}s. Exception: {ExceptionMessage}",
+                            messageType,
+                            sw.Elapsed.TotalSeconds,
+                            ex.Message);
 
             // Re-throw to ensure message is not acknowledged and can be retried
             throw;

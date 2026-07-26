@@ -18,7 +18,7 @@ public abstract class AuditableEntity<TKey> : IAuditableEntity
 
     [
         Required,
-        Column(TypeName = "datetime2(7)", Order = 997)
+        Column(Order = 997)
     ]
     public DateTime Created { get; set; }
 
@@ -28,7 +28,7 @@ public abstract class AuditableEntity<TKey> : IAuditableEntity
     ]
     public string? CreatedBy { get; set; }
 
-    [Column(TypeName = "datetime2(7)", Order = 999)]
+    [Column(Order = 999)]
     public DateTime? LastModified { get; set; }
 
     [

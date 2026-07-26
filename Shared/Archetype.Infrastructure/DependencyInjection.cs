@@ -243,7 +243,9 @@ public static class DependencyInjection
                 // Register each Hangfire job dynamically based on configuration
                 string jobKey = job.Handler.ToEndpointName(hangfireOptions.Prefix);
 
-                // Register each Hangfire job dynamically based on configuration
+                // Remove existing job with the same key to avoid duplicates
+                RecurringJob.RemoveIfExists(jobKey);
+
                 if (job.IsEnabled)
                 {
                     Type jobType = Type.GetType(job.Handler)
@@ -251,7 +253,7 @@ public static class DependencyInjection
                     string cron = job.Schedule.ToCronExpression();
 
                     // Register the job with CancellationToken support
-                    TaskManager.RegisterRecurringJob(jobKey, jobType, cron);
+                    TaskManager.RecurringJob(jobKey, jobType, cron);
 
                     if (job.AutoStart)
                         RecurringJob.TriggerJob(jobKey);
@@ -463,6 +465,14 @@ public static class DependencyInjection
                 options.AddFixedWindowLimiter("10RequestsPerMinute", config =>
                 {
                     config.PermitLimit = 10;
+                    config.Window = TimeSpan.FromMinutes(1);
+                    config.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                    config.QueueLimit = 0;
+                });
+
+                options.AddFixedWindowLimiter("60RequestsPerMinute", config =>
+                {
+                    config.PermitLimit = 60;
                     config.Window = TimeSpan.FromMinutes(1);
                     config.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
                     config.QueueLimit = 0;

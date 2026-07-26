@@ -70,6 +70,12 @@ public class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavior<TReque
                 activity.SetStatus(ActivityStatusCode.Error, ex.Message);
                 activity.AddException(ex);
             }
+
+            logger.LogError(ex,
+                            "[ERROR] {RequestName} failed after {ElapsedSeconds:F2}s with exception: {ExceptionMessage}",
+                            requestName,
+                            sw.Elapsed.TotalSeconds,
+                            ex.Message);
             throw;
         }
         finally
@@ -111,11 +117,10 @@ public class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavior<TReque
 
         if (logger.IsEnabled(LogLevel.Information))
         {
-            logger.LogInformation(
-                "[END] {RequestName} handled in {ElapsedSeconds:F2}s, Memory: {MemoryKB:F2} KB",
-                requestName,
-                elapsedSeconds,
-                memoryAllocated / 1024.0);
+            logger.LogInformation("[END] {RequestName} handled in {ElapsedSeconds:F2}s, Memory: {MemoryKB:F2} KB",
+                                  requestName,
+                                  elapsedSeconds,
+                                  memoryAllocated / 1024.0);
         }
 
         return response!;

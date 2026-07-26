@@ -55,10 +55,7 @@ public static class DatabaseExtensions
             }
             catch (Exception ex)
             {
-                if (logger?.IsEnabled(LogLevel.Error) == true)
-                {
-                    logger.LogError(ex, "Failed to apply migrations for {DbContext}. Application will continue.", typeof(TContext).Name);
-                }
+                logger?.LogError(ex, "Failed to apply migrations for {DbContext}. Application will continue.", typeof(TContext).Name);
             }
 
             return app;
@@ -125,10 +122,7 @@ public static class DatabaseExtensions
             }
             catch (Exception ex)
             {
-                if (logger?.IsEnabled(LogLevel.Error) == true)
-                {
-                    logger.LogError(ex, "Failed to apply migrations (async) for {DbContext}. Application will continue.", typeof(TContext).Name);
-                }
+                logger?.LogError(ex, "Failed to apply migrations (async) for {DbContext}. Application will continue.", typeof(TContext).Name);
             }
 
             return app;

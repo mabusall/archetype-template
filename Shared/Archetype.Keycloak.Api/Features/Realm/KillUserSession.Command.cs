@@ -2,5 +2,5 @@
 
 public record KeycloakRealmKillUserSessionCommand
 (
-    Guid SessionId
+    string Email
 ) : ICommand<KeycloakSuccessStatusResult>;

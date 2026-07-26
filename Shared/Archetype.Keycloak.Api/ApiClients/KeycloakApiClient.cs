@@ -370,23 +370,32 @@ public class KeycloakRealmClient(HttpClient httpClient,
 
     public async Task<KeycloakSuccessStatusResult> KillUserSessionAsync(KeycloakRealmKillUserSessionCommand command, CancellationToken cancellationToken)
     {
+        // get user sessions
+        IList<KeycloakRealmGetUserSessionsResult> sessions = await GetUserSessionsAsync(new KeycloakRealmGetUserSessionsQuery(command.Email), cancellationToken);
+
+        if (!sessions.Any())
+            throw new InvalidOperationException("No active session found");
+
         // get keycloak admin token
         KeycloakAdminLoginResult login = await adminClient.LoginAsync(cancellationToken);
 
-        KeycloakOptions options = appSettingsKeyManagement.KeycloakOptions;
-        Realm clientRealm = options!.GetCustomRealm();
-        string url = $"admin/realms/{clientRealm.Name}/sessions/{command.SessionId}";
-        using HttpRequestMessage httpRequest = new(HttpMethod.Delete, url);
-        httpClient.AttachBearerAuthentication(login.AccessToken!);
+        foreach (KeycloakRealmGetUserSessionsResult session in sessions)
+        {
+            KeycloakOptions options = appSettingsKeyManagement.KeycloakOptions;
+            Realm clientRealm = options!.GetCustomRealm();
+            string url = $"admin/realms/{clientRealm.Name}/sessions/{session.Id}";
+            using HttpRequestMessage httpRequest = new(HttpMethod.Delete, url);
+            httpClient.AttachBearerAuthentication(login.AccessToken!);
 
-        // send the request
-        HttpResponseMessage response = await httpClient.SendAsync(httpRequest, cancellationToken);
+            // send the request
+            HttpResponseMessage response = await httpClient.SendAsync(httpRequest, cancellationToken);
 
-        // logout admin session
-        await adminClient.LogoutAsync(login.RefreshToken!, cancellationToken);
+            // logout admin session
+            await adminClient.LogoutAsync(login.RefreshToken!, cancellationToken);
 
-        // validate the response
-        response.EnsureSuccessStatusCode();
+            // validate the response
+            response.EnsureSuccessStatusCode();
+        }
 
         return new KeycloakSuccessStatusResult(true);
     }

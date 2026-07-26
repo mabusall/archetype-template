@@ -1,4 +1,4 @@
-﻿namespace Archetype.Shared.Interfaces;
+namespace Archetype.Shared.Interfaces;
 
 public interface IHangfireJob
 {

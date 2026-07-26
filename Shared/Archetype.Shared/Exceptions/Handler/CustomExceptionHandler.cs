@@ -63,15 +63,12 @@ public class CustomExceptionHandler(ILogger<CustomExceptionHandler> logger)
         }
 
         // Structured logging
-        if (logger.IsEnabled(LogLevel.Error))
-        {
-            logger.LogError(exception,
-                            "Unhandled exception {ExceptionType} at {Path} with status {StatusCode} [TraceId: {TraceId}]",
-                            exception.GetType().Name,
-                            path,
-                            statusCode,
-                            traceId);
-        }
+        logger.LogError(exception,
+                        "Unhandled exception {ExceptionType} at {Path} with status {StatusCode} [TraceId: {TraceId}]",
+                        exception.GetType().Name,
+                        path,
+                        statusCode,
+                        traceId);
 
         // Build ProblemDetails
         ProblemDetails problemDetails = new()

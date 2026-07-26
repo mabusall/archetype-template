@@ -4,7 +4,7 @@ public class KeycloakRealmKillUserSessionCommandValidator : AbstractValidator<Ke
 {
     public KeycloakRealmKillUserSessionCommandValidator()
     {
-        RuleFor(r => r.SessionId)
+        RuleFor(r => r.Email)
             .NotEmpty()
             .WithMessage(ErrorMessageResources.NotEmpty);
     }

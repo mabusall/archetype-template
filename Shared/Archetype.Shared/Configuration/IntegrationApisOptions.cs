@@ -9,7 +9,9 @@ public record IntegrationApisOptions
 
 public record IntegrationApi
 {
-    public required string BaseUrl { get; set; }
+    public required string AddressUri { get; set; }
     public IList<string> Tokens { get; set; } = [];
-    public string ResourcesUrl { get; set; } = default!;
+    public string ResourcesUri { get; set; } = default!;
+    public int Limit { get; set; }
+    public IList<string> Quota { get; set; } = [];
 }

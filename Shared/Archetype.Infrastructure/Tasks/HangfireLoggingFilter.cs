@@ -58,18 +58,16 @@ public class HangfireLoggingFilter(ILogger<HangfireLoggingFilter> logger,
 
         if (logger.IsEnabled(LogLevel.Information))
         {
-            logger.LogInformation(
-                "[START] Executing Hangfire job {JobType}.{JobMethod} [JobId: {JobId}]",
-                jobType,
-                jobMethod,
-                jobId);
+            logger.LogInformation("[START] Executing Hangfire job {JobType}.{JobMethod} [JobId: {JobId}]",
+                                  jobType,
+                                  jobMethod,
+                                  jobId);
         }
 
         if (logger.IsEnabled(LogLevel.Debug))
         {
-            logger.LogDebug(
-                "Job Arguments: {@JobArguments}",
-                context.BackgroundJob.Job.Args);
+            logger.LogDebug("Job Arguments: {@JobArguments}",
+                            context.BackgroundJob.Job.Args);
         }
     }
 
@@ -99,7 +97,7 @@ public class HangfireLoggingFilter(ILogger<HangfireLoggingFilter> logger,
 
         try
         {
-            if (context.Exception != null)
+            if (context.Exception is not null)
             {
                 // Job failed with exception
                 if (activity is not null)
@@ -108,33 +106,25 @@ public class HangfireLoggingFilter(ILogger<HangfireLoggingFilter> logger,
                     activity.AddException(context.Exception);
                 }
 
-                if (logger.IsEnabled(LogLevel.Error))
-                {
-                    logger.LogError(
-                        context.Exception,
-                        "[FAILED] Hangfire job {JobType}.{JobMethod} failed after {ElapsedSeconds:F2}s [JobId: {JobId}]",
-                        jobType,
-                        jobMethod,
-                        elapsedSeconds,
-                        jobId);
-                }
+                logger.LogError(context.Exception,
+                                "[FAILED] Hangfire job {JobType}.{JobMethod} failed after {ElapsedSeconds:F2}s [JobId: {JobId}]",
+                                jobType,
+                                jobMethod,
+                                elapsedSeconds,
+                                jobId);
             }
             else if (context.Canceled)
             {
                 // Job was canceled
-                if (activity is not null)
-                {
-                    activity.SetStatus(ActivityStatusCode.Error, "Job canceled");
-                }
+                activity?.SetStatus(ActivityStatusCode.Error, "Job canceled");
 
                 if (logger.IsEnabled(LogLevel.Warning))
                 {
-                    logger.LogWarning(
-                        "[CANCELED] Hangfire job {JobType}.{JobMethod} was canceled after {ElapsedSeconds:F2}s [JobId: {JobId}]",
-                        jobType,
-                        jobMethod,
-                        elapsedSeconds,
-                        jobId);
+                    logger.LogWarning("[CANCELED] Hangfire job {JobType}.{JobMethod} was canceled after {ElapsedSeconds:F2}s [JobId: {JobId}]",
+                                      jobType,
+                                      jobMethod,
+                                      elapsedSeconds,
+                                      jobId);
                 }
             }
             else
@@ -149,22 +139,20 @@ public class HangfireLoggingFilter(ILogger<HangfireLoggingFilter> logger,
                 // Performance warning if job took too long
                 if (elapsedSeconds > 30 && logger.IsEnabled(LogLevel.Warning))
                 {
-                    logger.LogWarning(
-                        "[PERFORMANCE] Hangfire job {JobType}.{JobMethod} took {ElapsedSeconds:F2}s [JobId: {JobId}]",
-                        jobType,
-                        jobMethod,
-                        elapsedSeconds,
-                        jobId);
+                    logger.LogWarning("[PERFORMANCE] Hangfire job {JobType}.{JobMethod} took {ElapsedSeconds:F2}s [JobId: {JobId}]",
+                                      jobType,
+                                      jobMethod,
+                                      elapsedSeconds,
+                                      jobId);
                 }
 
                 if (logger.IsEnabled(LogLevel.Information))
                 {
-                    logger.LogInformation(
-                        "[END] Hangfire job {JobType}.{JobMethod} completed successfully in {ElapsedSeconds:F2}s [JobId: {JobId}]",
-                        jobType,
-                        jobMethod,
-                        elapsedSeconds,
-                        jobId);
+                    logger.LogInformation("[END] Hangfire job {JobType}.{JobMethod} completed successfully in {ElapsedSeconds:F2}s [JobId: {JobId}]",
+                                          jobType,
+                                          jobMethod,
+                                          elapsedSeconds,
+                                          jobId);
                 }
             }
 

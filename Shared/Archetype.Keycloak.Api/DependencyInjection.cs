@@ -27,8 +27,8 @@ public static class DependencyInjection
 
                 client.BaseAddress = new Uri(keycloak!);
                 client.DefaultRequestHeaders
-                        .Accept
-                        .Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+                    .Accept
+                    .Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
             })
             .AddResilienceHandler("keycloak-api", (pipeline, context) =>
             {
@@ -67,10 +67,9 @@ public static class DependencyInjection
                                               ?? lastFailure.Result?.StatusCode.ToString()
                                               ?? "Unknown failure";
 
-                            logger.LogWarning(
-                                "Circuit OPENED for {BreakDuration}. Last failure: {Failure}",
-                                args.BreakDuration,
-                                failureText);
+                            logger.LogWarning("Circuit OPENED for {BreakDuration}. Last failure: {Failure}",
+                                              args.BreakDuration,
+                                              failureText);
                         }
                         return ValueTask.CompletedTask;
                     },
