@@ -13,11 +13,16 @@ internal class CountriesNowApiClient(HttpClient httpClient,
 
     public async Task<GetCountryCitiesResponse> GetCitiesAsync(string countryName, CancellationToken cancellationToken = default)
     {
-        GetCountryCitiesRequest request = new() { Country = countryName };
+        using FormUrlEncodedContent content = new(new Dictionary<string, string>
+        {
+            ["country"] = countryName,
+        });
+        using HttpRequestMessage httpRequest = new(HttpMethod.Post, "cities")
+        {
+            Content = content
+        };
 
-        using StringContent content = new(JsonSerializer.Serialize(request), Encoding.UTF8, System.Net.Mime.MediaTypeNames.Application.FormUrlEncoded);
-
-        HttpResponseMessage response = await httpClient.PostAsync("cities", content, cancellationToken);
+        HttpResponseMessage response = await httpClient.SendAsync(httpRequest, cancellationToken);
 
         response.EnsureSuccessStatusCode();
 
