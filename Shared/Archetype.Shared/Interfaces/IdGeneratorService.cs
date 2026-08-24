@@ -7,5 +7,5 @@ public class IdGeneratorService : IIdGeneratorService
     /// </summary>
     public static string CorrelationIdKey => "SystemCorrelationId";
 
-    public Guid NewID() => NewId.NextGuid();
+    public Guid NewID() => Guid.CreateVersion7(); // NewId.NextGuid();
 }
