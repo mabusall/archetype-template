@@ -9,7 +9,7 @@
 
 	<ItemGroup>
 		<EmbeddedResource Include="Views\**" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
-		<PackageReference Include="FirebaseAdmin" Version="3.6.0" />
+		<PackageReference Include="FirebaseAdmin" Version="3.7.0" />
 		<ProjectReference Include="..\..\..\Shared\Archetype.Infrastructure\Archetype.Infrastructure.csproj" />
 		<ProjectReference Include="..\..\..\Shared\Archetype.Resources\Archetype.Resources.csproj" />
 		<Content Update="Views\**\*.cshtml" />
