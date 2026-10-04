@@ -847,6 +847,9 @@ public static class DependencyInjection
         if (loggingAndMonitoringOptions is null || !loggingAndMonitoringOptions.IsEnabled)
             return builder;
 
+        // Prevent duplicate logs (default .NET Console logger vs Serilog Console logger)
+        builder.Logging.ClearProviders();
+
         LoggingOptions loggingConfig = loggingAndMonitoringOptions.Logging;
         ElasticsearchOptions elasticsearchConfig = loggingAndMonitoringOptions.Elasticsearch;
 
