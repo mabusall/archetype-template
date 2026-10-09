@@ -16,14 +16,18 @@ public class LocalizationMiddleware(RequestDelegate next)
         if (acceptLanguage.Length == 1 && acceptLanguage.Equals("*"))
             language = "en";
 
-        if (string.IsNullOrEmpty(language))
+        if (string.IsNullOrWhiteSpace(language))
             language = "en"; // Fallback to default language if not provided
 
         if (language.Contains('-'))
             language = language.Split('-')[0]; // Use only the primary language subtag
 
         // check what is the current language
-        string currentLanguage = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName.ToLower();
+        string currentLanguage = Thread
+            .CurrentThread
+            .CurrentCulture
+            .TwoLetterISOLanguageName
+            .ToLower();
 
         if (currentLanguage != language)
         {
