@@ -798,16 +798,6 @@ public static class DependencyInjection
 
                 options.UsingRabbitMq((context, config) =>
                 {
-                    // set MassTransit license if provided (for advanced features and support)
-                    if (rabbitMqOptions.LicenseAvailable)
-                    {
-                        // License is provided but ensure it's not empty or whitespace
-                        ArgumentException.ThrowIfNullOrWhiteSpace(rabbitMqOptions.License);
-
-                        // Apply the license to the MassTransit configuration
-                        config.SetLicense(rabbitMqOptions.License);
-                    }
-
                     // to avoid nullability if no consumer added
                     Action<IRabbitMqBusFactoryConfigurator, IBusRegistrationContext>? busFactoryConfigurators = BusConfiguration.GetBusFactoryConfigurators();
                     if (busFactoryConfigurators is not null)

@@ -9,13 +9,11 @@ public class RabbitMqOptions
     public required string UserName { get; set; }
     public required string Password { get; set; }
     public required string Prefix { get; set; }
-    public required string License { get; set; }
     public bool IsEnabled { get; set; }
     public bool AutoStart { get; set; }
     public bool AutoDelete { get; set; }
     public bool DisableDeliveryService { get; set; }
     public bool DisableInboxCleanupService { get; set; }
-    public bool LicenseAvailable { get; set; }
     public Dictionary<string, ConsumerEndpoint> Consumers { get; set; } = [];
 }
 
