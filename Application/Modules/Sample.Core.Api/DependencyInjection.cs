@@ -83,56 +83,7 @@ static class DependencyInjection
                     // Transient predicate provided by Microsoft.Extensions.Http.Resilience
                     ShouldHandle = args => ValueTask.FromResult(
                         HttpClientResiliencePredicates.IsTransient(args.Outcome))
-                });
-
-
-                // ✅ Circuit breaker (Polly v8)
-                pipeline.AddCircuitBreaker(new HttpCircuitBreakerStrategyOptions
-                {
-                    // Small values for testing
-                    SamplingDuration = TimeSpan.FromSeconds(10),
-                    FailureRatio = 0.5,        // 50% failures in the sampling window trips the breaker
-                    MinimumThroughput = 2,     // minimum calls in sampling window to consider tripping
-                    BreakDuration = TimeSpan.FromSeconds(15),
-
-                    // 🟥 Circuit OPENED
-                    OnOpened = args =>
-                    {
-                        if (logger.IsEnabled(LogLevel.Warning))
-                        {
-                            Outcome<HttpResponseMessage> lastFailure = args.Outcome;
-                            string failureText = lastFailure.Exception?.Message
-                                              ?? lastFailure.Result?.StatusCode.ToString()
-                                              ?? "Unknown failure";
-
-                            logger.LogWarning(
-                                "Circuit OPENED for {BreakDuration}. Last failure: {Failure}",
-                                args.BreakDuration,
-                                failureText);
-                        }
-                        return ValueTask.CompletedTask;
-                    },
-
-                    //  Circuit HALF-OPEN
-                    OnHalfOpened = args =>
-                    {
-                        if (logger.IsEnabled(LogLevel.Information))
-                        {
-                            logger.LogInformation("Circuit HALF-OPEN: probing service availability...");
-                        }
-                        return ValueTask.CompletedTask;
-                    },
-
-                    //  Circuit CLOSED
-                    OnClosed = args =>
-                    {
-                        if (logger.IsEnabled(LogLevel.Information))
-                        {
-                            logger.LogInformation("Circuit CLOSED: service appears healthy again.");
-                        }
-                        return ValueTask.CompletedTask;
-                    }
-                });
+                }).AddStandardCircuitBreaker(logger, "CountriesNow");
 
                 pipeline.AddTimeout(TimeSpan.FromMinutes(3));
             });

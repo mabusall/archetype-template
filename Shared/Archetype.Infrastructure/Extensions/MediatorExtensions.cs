@@ -5,7 +5,7 @@ internal static class MediatorExtensions
     extension(IServiceCollection services)
     {
         internal IServiceCollection AddArchetypeMediator(IReadOnlyCollection<Assembly> assemblies,
-                                                                Action<MediatorConfiguration> configure)
+                                                         Action<MediatorConfiguration> configure)
         {
             services.AddScoped<IMediator, Mediator.Mediator>();
 
