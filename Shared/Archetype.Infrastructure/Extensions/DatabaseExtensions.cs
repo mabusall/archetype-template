@@ -31,7 +31,7 @@ public static class DatabaseExtensions
                     return app;
                 }
 
-                List<string> pendingMigrations = context.Database.GetPendingMigrations().ToList();
+                List<string> pendingMigrations = [.. context.Database.GetPendingMigrations()];
                 if (pendingMigrations.Count == 0)
                 {
                     if (logger?.IsEnabled(LogLevel.Information) == true)
@@ -98,7 +98,10 @@ public static class DatabaseExtensions
                     return app;
                 }
 
-                List<string> pendingMigrations = (await context.Database.GetPendingMigrationsAsync(cancellationToken).ConfigureAwait(false)).ToList();
+                List<string> pendingMigrations = [.. (await context
+                    .Database
+                    .GetPendingMigrationsAsync(cancellationToken)
+                    .ConfigureAwait(false))];
                 if (pendingMigrations.Count == 0)
                 {
                     if (logger?.IsEnabled(LogLevel.Information) == true)
